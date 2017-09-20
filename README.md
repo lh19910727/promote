@@ -27,4 +27,6 @@ npm run e2e
 npm test
 ```
 
+run npm rebuild node-sass if encounter node-sass vendor releated error
+
 For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
