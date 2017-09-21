@@ -17,14 +17,6 @@ export default new Router({
       },
     },
     {
-      path: '/products',
-      name: 'products',
-      components: {
-        default: resolve => require(['@/pages/products/productList'], resolve),
-        bottomBar,
-      },
-    },
-    {
       path: '/404',
       alias: '*',
       name: 'notFound',
