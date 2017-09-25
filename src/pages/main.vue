@@ -12,6 +12,7 @@
   import map from 'lodash/map'
   import forEach from 'lodash/forEach'
   import bgImgUrl from '@/assets/bg.png'
+  import arrowImgUrl from '@/assets/arrow.png'
   import { preloadImage } from '@/utils/imageUtil'
   import prizeList from '@/constants/prizeData'
   import TextArc from '@/utils/TextArc'
@@ -27,11 +28,11 @@
     },
     methods: {
       getImageList() {
-        return [bgImgUrl].concat(map(prizeList, prize => prize.icon))
+        return [bgImgUrl, arrowImgUrl].concat(map(prizeList, prize => prize.icon))
       },
       doAnimate(event) {
-        const pricePlate = this.stage.getChildByName('prizePlate')
-        pricePlate.rotation += (event.delta / 500) * 180
+        const prizePlate = this.stage.getChildByName('prizePlate')
+        prizePlate.rotation += (event.delta / 500) * 360
         this.stage.update()
       },
       animatePlate() {
@@ -46,7 +47,11 @@
         } else {
           startLabel.visible = true
           pauseLabel.visible = false
-          createjs.Ticker.removeEventListener('tick', this.doAnimate);
+          createjs.Ticker.removeEventListener('tick', this.doAnimate)
+          const prizePlate = this.stage.getChildByName('prizePlate')
+          // 随机抽中一个
+          prizePlate.rotation = ((Math.floor(prizeList.length * Math.random()) + 0.5)
+            * this.sectorAngle * 180) / Math.PI
           this.stage.update()
         }
       },
@@ -89,16 +94,14 @@
           container.addChild(sector)
           // label
           const labelRadius = radius * 0.42
-          const label = new TextArc(prize.title, '14px Arial', '#ffffff', labelRadius)
+          const label = new TextArc(prize.title, '14px 黑体', '#f15955', labelRadius)
           const labelAngle = cumulativeAngle + (sectorAngle / 2.0)
           const labelX = posX + (labelRadius * Math.cos(labelAngle))
           const labelY = posY + (labelRadius * Math.sin(labelAngle))
           label.x = labelX
           label.y = labelY
           label.textAlign = 'center'
-//          label.textBaseline = 'bottom'
           label.rotation = ((labelAngle * 180) / Math.PI) + 90
-          console.log('----label', label.getBounds())
           container.addChild(label)
           // image
           const prizeImage = new Image()
@@ -136,19 +139,15 @@
         const arrowContainer = new createjs.Container()
         arrowContainer.name = 'arrowContainer'
         // arrow
-        const arrow = new createjs.Shape()
-        arrow.graphics
-          .moveTo(this.posX, this.posY)
-          .setStrokeStyle(2)
-          .beginStroke('#ffda30')
-          .beginFill('#ff0000')
-          .arc(this.posX, this.posY, 35, -(Math.PI / 3), (4 * Math.PI) / 3)
-          .lineTo(this.posX, this.posY - 55)
-          .closePath()
+        const arrow = new createjs.Bitmap(arrowImgUrl)
+        arrow.scaleX = 70 / 210
+        arrow.scaleY = 78.33 / 235
+        arrow.x = this.posX - 35
+        arrow.y = this.posY - (78.33 / 2) - 4
         arrowContainer.addChild(arrow)
         // start arrow text
-        const startLabel = this.generateLabel('开始', 'startLabel', true)
-        const pauseLabel = this.generateLabel('结束', 'pauseLabel', false)
+        const startLabel = this.generateLabel('GO', 'startLabel', true)
+        const pauseLabel = this.generateLabel('STOP', 'pauseLabel', false)
         arrowContainer.addChild(startLabel)
         arrowContainer.addChild(pauseLabel)
         // bind click event
