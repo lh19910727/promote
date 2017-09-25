@@ -1,7 +1,6 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import MainPage from '@/pages/main';
-import bottomBar from '@/components/common/bottomBar'
 
 Vue.use(Router);
 
@@ -13,7 +12,6 @@ export default new Router({
       name: 'main',
       components: {
         default: MainPage,
-        bottomBar,
       },
     },
     {

@@ -35,4 +35,7 @@ module.exports = {
     'jsx-a11y/href-no-hash': 0,
     'semi': 0,
   },
+  'globals': {
+    'createjs': true,
+  },
 }

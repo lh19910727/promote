@@ -1591,6 +1591,10 @@ create-hmac@^1.1.0, create-hmac@^1.1.2, create-hmac@^1.1.4:
     safe-buffer "^5.0.1"
     sha.js "^2.4.8"
 
+createjs-easeljs@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/createjs-easeljs/-/createjs-easeljs-0.8.2.tgz#4a30629cdfdd60628400ea48521dc5edfade97b9"
+
 cross-env@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/cross-env/-/cross-env-4.0.0.tgz#16083862d08275a4628b0b243b121bedaa55dd80"
