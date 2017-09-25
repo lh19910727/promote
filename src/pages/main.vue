@@ -27,6 +27,24 @@
       }
     },
     methods: {
+      dottedLine(radius, name, color) {
+        const dottedContainer = new createjs.Container()
+        dottedContainer.name = name
+        // light
+        const totalCircle = 9
+        const dotRadius = radius * 0.95
+        for( let i =0; i < totalCircle; i ++) { // eslint-disable-line
+          const lightPlate = new createjs.Shape()
+          const angle = i * 2 * (Math.PI / totalCircle)
+          const x = this.posX + (Math.cos(angle) * dotRadius)
+          const y = this.posY + (Math.sin(angle) * dotRadius)
+          lightPlate.graphics.beginFill(color)
+          lightPlate.graphics.arc(x, y, 5, 0, Math.PI * 2, false)
+          lightPlate.graphics.closePath()
+          dottedContainer.addChild(lightPlate)
+        }
+        return dottedContainer
+      },
       getImageList() {
         return [bgImgUrl, arrowImgUrl].concat(map(prizeList, prize => prize.icon))
       },
@@ -57,7 +75,7 @@
       },
       generateLabel(text, name, visible) {
         // arrow text
-        const arrowText = new createjs.Text(text, '18px Arial', '#ffda30')
+        const arrowText = new createjs.Text(text, '18px Arial', '#ffffff')
         arrowText.name = name
         arrowText.x = this.posX
         arrowText.y = this.posY + 10
@@ -67,31 +85,82 @@
         return arrowText
       },
       drawBase(stage) {
-        const circle = new createjs.Shape()
+        const baseContainer = new createjs.Container()
+        baseContainer.name = 'baseContainer'
+        const basePlate = new createjs.Shape()
         const radius = (this.canvasWidth - 30) / 2
-        circle.graphics.beginFill('#ffda30').drawCircle(this.posX, this.posY, radius)
-        stage.addChild(circle)
+        basePlate.graphics.beginFill('#f15955').drawCircle(this.posX, this.posY, radius)
+        baseContainer.addChild(basePlate)
+        // light
+        const dottedCircleLight = this.dottedLine(radius, 'light', '#fbf08f')
+        const dottedCircleShadow = this.dottedLine(radius, 'shadow', '#f8aca9')
+        dottedCircleShadow.x = this.posX
+        dottedCircleShadow.y = this.posY
+        dottedCircleShadow.regX = this.posX
+        dottedCircleShadow.regY = this.posY
+        dottedCircleShadow.rotation = 20
+        createjs.Tween.get(dottedCircleLight, { loop: true })
+          .to({ alpha: 0.3 }, 100)
+          .to({ alpha: 1 }, 500, createjs.Ease.getPowInOut(2))
+        createjs.Tween.get(dottedCircleShadow, { loop: true })
+          .to({ alpha: 1 }, 100)
+          .to({ alpha: 0.3 }, 500, createjs.Ease.getPowInOut(2))
+        createjs.Ticker.setFPS(30)
+        createjs.Ticker.addEventListener('tick', stage)
+        baseContainer.addChild(dottedCircleLight)
+        baseContainer.addChild(dottedCircleShadow)
+        stage.addChild(baseContainer)
       },
       drawMiddle(stage) {
         const middleContainer = new createjs.Container()
         middleContainer.name = 'prizePlate'
-        const radius = (this.canvasWidth - 60) / 2
+        const radius = (this.canvasWidth - 80) / 2
         const posX = this.posX
         const posY = this.posY
         let cumulativeAngle = -(Math.PI / 2)
         const sectorAngle = this.sectorAngle
-        forEach(prizeList, prize => {
+        forEach(prizeList, (prize, idx) => {
           const container = new createjs.Container()
+          const endAngle = cumulativeAngle + sectorAngle
           // sector base
           const sector = new createjs.Shape()
           sector.graphics.moveTo(posX, posY)
-            .setStrokeStyle(1)
-            .beginStroke('#ff0000')
+            .beginFill('#ffffff')
           sector.graphics
-            .arc(posX, posY, radius, cumulativeAngle, cumulativeAngle + sectorAngle)
+            .arc(posX, posY, radius, cumulativeAngle, endAngle)
             .lineTo(posX, posY)
           sector.graphics.closePath()
           container.addChild(sector)
+          // sector subBase
+          const gEndPointX = posX + (radius * 0.77 * Math.cos(endAngle))
+          const gEndPointY = posY + (radius * 0.77 * Math.sin(endAngle))
+          const subSector = new createjs.Shape()
+          subSector.graphics
+            .moveTo(posX, posY)
+            .beginLinearGradientFill(['#faded3', (idx % 2 === 0 ? '#f86e37' : '#f5875c')], [0, 1], this.posX, this.posY, gEndPointX, gEndPointY)
+          subSector.graphics
+            .arc(posX, posY, radius * 0.77, cumulativeAngle, cumulativeAngle + sectorAngle)
+            .lineTo(posX, posY)
+          subSector.graphics.closePath()
+          container.addChild(subSector)
+          // sector line
+          const endPointX = posX + (radius * Math.cos(endAngle))
+          const endPointY = posY + (radius * Math.sin(endAngle))
+          const sectorLine = new createjs.Shape()
+          sectorLine.graphics
+            .setStrokeStyle(2)
+            .beginStroke('#f15955')
+            .moveTo(posX, posY)
+            .lineTo(endPointX, endPointY)
+          sectorLine.shadow = new createjs.Shadow('#ffffff', 0, 3, 3)
+          container.addChild(sectorLine)
+          // sector base border
+          const sectorBoxArcLine = new createjs.Shape()
+          sectorBoxArcLine.graphics
+            .setStrokeStyle(6)
+            .beginStroke('#fcd958')
+            .drawCircle(posX, posY, radius)
+          container.addChild(sectorBoxArcLine)
           // label
           const labelRadius = radius * 0.42
           const label = new TextArc(prize.title, '14px 黑体', '#f15955', labelRadius)
@@ -106,8 +175,8 @@
           // image
           const prizeImage = new Image()
           prizeImage.src = prize.icon
-          const prizeBitMapImg = new createjs.Bitmap(prizeImage)
-          const prizeRadius = radius * 0.60
+          const prizeBitMapImg = new createjs.Bitmap(prize.icon)
+          const prizeRadius = radius * 0.5
           const prizeAngle = cumulativeAngle + (sectorAngle / 2.0)
           const prizeX = posX + (prizeRadius * Math.cos(prizeAngle))
           const prizeY = posY + (prizeRadius * Math.sin(prizeAngle))
@@ -169,7 +238,7 @@
           this.drawBase(this.stage)
           this.drawMiddle(this.stage, this.prizeImg)
           this.drawArrow(this.stage)
-          this.stage.update()
+//          this.stage.update()
         })
       }
     },
