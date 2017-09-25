@@ -14,6 +14,7 @@
   import bgImgUrl from '@/assets/bg.png'
   import { preloadImage } from '@/utils/imageUtil'
   import prizeList from '@/constants/prizeData'
+  import TextArc from '@/utils/TextArc'
 
   export default {
     name: 'main',
@@ -72,7 +73,7 @@
         const radius = (this.canvasWidth - 60) / 2
         const posX = this.posX
         const posY = this.posY
-        let cumulativeAngle = 0;
+        let cumulativeAngle = -(Math.PI / 2)
         const sectorAngle = this.sectorAngle
         forEach(prizeList, prize => {
           const container = new createjs.Container()
@@ -87,16 +88,17 @@
           sector.graphics.closePath()
           container.addChild(sector)
           // label
-          const label = new createjs.Text(prize.title, '14px Arial', '#000000')
-          const labelRadius = radius * 0.77
+          const labelRadius = radius * 0.42
+          const label = new TextArc(prize.title, '14px Arial', '#ffffff', labelRadius)
           const labelAngle = cumulativeAngle + (sectorAngle / 2.0)
           const labelX = posX + (labelRadius * Math.cos(labelAngle))
           const labelY = posY + (labelRadius * Math.sin(labelAngle))
           label.x = labelX
           label.y = labelY
           label.textAlign = 'center'
-          label.textBaseline = 'bottom'
+//          label.textBaseline = 'bottom'
           label.rotation = ((labelAngle * 180) / Math.PI) + 90
+          console.log('----label', label.getBounds())
           container.addChild(label)
           // image
           const prizeImage = new Image()
@@ -106,8 +108,8 @@
           const prizeAngle = cumulativeAngle + (sectorAngle / 2.0)
           const prizeX = posX + (prizeRadius * Math.cos(prizeAngle))
           const prizeY = posY + (prizeRadius * Math.sin(prizeAngle))
-          prizeBitMapImg.scaleX = 50 / prizeImage.width
-          prizeBitMapImg.scaleY = 35 / prizeImage.height
+          prizeBitMapImg.scaleX = 40 / prizeImage.width
+          prizeBitMapImg.scaleY = 28 / prizeImage.height
           prizeBitMapImg.x = prizeX
           prizeBitMapImg.y = prizeY
           prizeBitMapImg.regX = prizeImage.width / 2
@@ -121,7 +123,7 @@
         middleContainer.y = this.posY
         middleContainer.regX = this.posX
         middleContainer.regY = this.posY
-        middleContainer.rotation = this.sectorAngle
+//        middleContainer.rotation = 0
         stage.addChild(middleContainer)
       },
       setBg(stage, bgImage) {

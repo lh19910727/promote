@@ -23,10 +23,16 @@ export default [{
 }, {
   title: '啤酒一杯',
   icon: beer,
+}, /** {
+  title: '啤酒一杯',
+  icon: beer,
+}, {
+  title: '啤酒一杯',
+  icon: beer,
 }, {
   title: '啤酒一杯',
   icon: beer,
 }, {
   title: '啤酒一杯',
   icon: beer,
-}]
+}*/]
