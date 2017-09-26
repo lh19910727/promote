@@ -32,7 +32,7 @@
         dottedContainer.name = name
         // light
         const totalCircle = 9
-        const dotRadius = radius * 0.95
+        const dotRadius = radius - 10
         for( let i =0; i < totalCircle; i ++) { // eslint-disable-line
           const lightPlate = new createjs.Shape()
           const angle = i * 2 * (Math.PI / totalCircle)
@@ -132,12 +132,10 @@
           sector.graphics.closePath()
           container.addChild(sector)
           // sector subBase
-          const gEndPointX = posX + (radius * 0.77 * Math.cos(endAngle))
-          const gEndPointY = posY + (radius * 0.77 * Math.sin(endAngle))
           const subSector = new createjs.Shape()
           subSector.graphics
             .moveTo(posX, posY)
-            .beginLinearGradientFill(['#faded3', (idx % 2 === 0 ? '#f86e37' : '#f5875c')], [0, 1], this.posX, this.posY, gEndPointX, gEndPointY)
+            .beginFill(idx % 2 === 0 ? '#ffa481' : '#f5875c')
           subSector.graphics
             .arc(posX, posY, radius * 0.77, cumulativeAngle, cumulativeAngle + sectorAngle)
             .lineTo(posX, posY)
@@ -148,11 +146,11 @@
           const endPointY = posY + (radius * Math.sin(endAngle))
           const sectorLine = new createjs.Shape()
           sectorLine.graphics
-            .setStrokeStyle(2)
-            .beginStroke('#f15955')
+            .setStrokeStyle(1.5)
+            .beginStroke('rgb(232, 126, 86)')
             .moveTo(posX, posY)
             .lineTo(endPointX, endPointY)
-          sectorLine.shadow = new createjs.Shadow('#ffffff', 0, 3, 3)
+          sectorLine.shadow = new createjs.Shadow('rgba(255, 255, 255, 0.23)', -2, 0, 0)
           container.addChild(sectorLine)
           // sector base border
           const sectorBoxArcLine = new createjs.Shape()
@@ -180,8 +178,8 @@
           const prizeAngle = cumulativeAngle + (sectorAngle / 2.0)
           const prizeX = posX + (prizeRadius * Math.cos(prizeAngle))
           const prizeY = posY + (prizeRadius * Math.sin(prizeAngle))
-          prizeBitMapImg.scaleX = 40 / prizeImage.width
-          prizeBitMapImg.scaleY = 28 / prizeImage.height
+          prizeBitMapImg.scaleX = 50 / prizeImage.width
+          prizeBitMapImg.scaleY = 50 / prizeImage.height
           prizeBitMapImg.x = prizeX
           prizeBitMapImg.y = prizeY
           prizeBitMapImg.regX = prizeImage.width / 2
@@ -219,6 +217,7 @@
         const pauseLabel = this.generateLabel('STOP', 'pauseLabel', false)
         arrowContainer.addChild(startLabel)
         arrowContainer.addChild(pauseLabel)
+        arrowContainer.shadow = new createjs.Shadow('#ffffff', 0, 0, 100)
         // bind click event
         arrowContainer.addEventListener('click', this.animatePlate)
         stage.addChild(arrowContainer)

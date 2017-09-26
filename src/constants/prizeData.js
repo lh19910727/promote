@@ -1,28 +1,28 @@
-import bag from '@/assets/prize/bag.png'
-import trunk from '@/assets/prize/trunk.png'
-import leg from '@/assets/prize/leg.png'
-import scarf from '@/assets/prize/scarf.png'
-import ticket from '@/assets/prize/ticket.png'
-import beer from '@/assets/prize/beer.png'
+import member from '@/assets/prize/member.png'
+import strap from '@/assets/prize/strap.png'
+import scale from '@/assets/prize/scale.png'
+import thanks from '@/assets/prize/thanks.png'
+import coupon from '@/assets/prize/coupon.png'
+import prize from '@/assets/prize/prize.png'
 
 export default [{
-  title: '苹果手机',
-  icon: bag,
+  title: '爱奇艺会员',
+  icon: member,
 }, {
-  title: '卡车一辆',
-  icon: trunk,
+  title: '小米手环',
+  icon: strap,
 }, {
-  title: '鸡腿一个',
-  icon: leg,
+  title: '感谢参与',
+  icon: thanks,
 }, {
-  title: '围巾一条',
-  icon: scarf,
+  title: '小米体重秤',
+  icon: scale,
 }, {
-  title: '电影票一张',
-  icon: ticket,
+  title: '神秘奖品',
+  icon: prize,
 }, {
-  title: '啤酒一杯',
-  icon: beer,
+  title: '10元优惠券',
+  icon: coupon,
 }, /** {
   title: '啤酒一杯',
   icon: beer,
