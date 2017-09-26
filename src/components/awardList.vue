@@ -3,13 +3,17 @@
     <h2>
       <img :src="titleTextImg"  />
     </h2>
-    <div class="nameList">
-      <p
-        v-for="(award, idx) in awardList"
-        :key="idx"
-      >
-        {{award.name}}<span>获得{{award.prizeName}}</span>
-      </p>
+    <div class="nameList" ref="marqueeBox">
+      <div ref="origin">
+        <p
+          v-for="(award, idx) in awardList"
+          :key="idx"
+        >
+          {{award.name}}<span>获得{{award.prizeName}}</span>
+        </p>
+      </div>
+      <div ref="clone">
+      </div>
     </div>
   </div>
 </template>
@@ -32,8 +36,8 @@
       }
     }
     .nameList{
+      position: relative;
       height: 120px;
-      padding-top: 10px;
       background-color: $yellow-82;
       border: 1px dotted $primary-red;
       border-top: none;
@@ -67,6 +71,26 @@
         type: Array,
         default: [],
       },
+    },
+    methods: {
+      marquee(speed = 10) {
+        const marqueeBox = this.$refs.marqueeBox
+        const originEle = this.$refs.origin
+        const cloneEle = this.$refs.clone
+        cloneEle.innerHTML = originEle.innerHTML
+        console.log('-----speed', speed)
+        const rolling = () => {
+          if (marqueeBox.scrollTop === cloneEle.offsetTop) {
+            marqueeBox.scrollTop = 0
+          } else {
+            marqueeBox.scrollTop += 1
+          }
+        }
+        setInterval(rolling, speed)
+      },
+    },
+    mounted() {
+      this.marquee(50)
     },
   }
 

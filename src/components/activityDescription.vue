@@ -61,7 +61,7 @@
 
     }
     .descriptionList{
-      padding-top: 10px;
+      padding-top: 20px;
       border-top: none;
       overflow: hidden;
       p{
