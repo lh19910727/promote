@@ -31,7 +31,7 @@
     props: {
       paddingTop: {
         type: Number,
-        default: 170,
+        default: document.body.clientWidth * 0.52,
       },
       canvasWidth: {
         type: Number,
@@ -108,10 +108,10 @@
         // foundation
         const foundationContainer = new createjs.Container()
         const foundation = new createjs.Shape()
-        const bottomY = this.posY + 217.5
-        const leftBottomX = this.posX - 115.5
-        const rightBottomX = this.posX + 115.5
-        foundation.graphics.moveTo(this.posX, this.posY - 50)
+        const bottomY = this.posY + this.outerRadius + (this.canvasWidth * 0.15)
+        const leftBottomX = this.posX - (this.canvasWidth * 0.307)
+        const rightBottomX = this.posX + (this.canvasWidth * 0.307)
+        foundation.graphics.moveTo(this.posX, this.posY - (this.canvasWidth * 0.13))
         foundation.graphics.beginFill('#f15955')
           .lineTo(leftBottomX, bottomY)
           .lineTo(rightBottomX, bottomY)
@@ -231,8 +231,8 @@
           const prizeAngle = cumulativeAngle + (sectorAngle / 2.0)
           const prizeX = posX + (prizeRadius * Math.cos(prizeAngle))
           const prizeY = posY + (prizeRadius * Math.sin(prizeAngle))
-          prizeBitMapImg.scaleX = 50 / prizeImage.width
-          prizeBitMapImg.scaleY = 50 / prizeImage.height
+          prizeBitMapImg.scaleX = (prizeRadius * 0.7) / prizeImage.width
+          prizeBitMapImg.scaleY = (prizeRadius * 0.7) / prizeImage.height
           prizeBitMapImg.x = prizeX
           prizeBitMapImg.y = prizeY
           prizeBitMapImg.regX = prizeImage.width / 2
