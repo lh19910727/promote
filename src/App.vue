@@ -63,6 +63,6 @@ export default {
     overflow: hidden;
   }
   .pageContent{
-    overflow: hidden;
+    overflow: scroll;
   }
 </style>
