@@ -274,7 +274,8 @@
       const prizeCount = prizeList.length || 1
       this.posX = this.canvasWidth / 2
       this.sectorAngle = (Math.PI * 2) / prizeCount
-      this.outerRadius = (this.canvasWidth / 2) * (13 / 15)
+//      this.outerRadius = (this.canvasWidth / 2) * (13 / 15)
+      this.outerRadius = (this.canvasWidth - rem(100)) / 2
       this.dottedRadius = (311 / 325) * this.outerRadius
       this.dottedCircleRadius = (13 / 650) * this.outerRadius
       this.posY = this.outerRadius + (this.canvasWidth * 0.53)

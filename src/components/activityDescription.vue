@@ -17,8 +17,9 @@
 
 <style lang="scss" scoped>
   @import '~theme/colors';
+  @import '~theme/function';
   .activityContainer{
-    padding: 25px;
+    padding: rem-calc(25px);
     h2{
       position: relative;
       height: 20px;
@@ -61,12 +62,12 @@
 
     }
     .descriptionList{
-      padding-top: 20px;
+      padding-top: rem-calc(20px);
       border-top: none;
       overflow: hidden;
       p{
-        margin-bottom: 10px;
-        font-size: 15px;
+        margin-bottom: rem-calc(10px);
+        font-size: rem-calc(15px);
         text-align: left;
         line-height: 1.6;
         color: #48453c;

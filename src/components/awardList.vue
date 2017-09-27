@@ -20,34 +20,35 @@
 
 <style lang="scss">
   @import '~theme/colors';
+  @import '~theme/function';
   .awardListContainer{
-    padding: 0 25px;
+    padding: 0 rem-calc(25px);
     h2{
-      height: 40.5px;
+      height: rem-calc(40.5px);
       background-color: $primary-red;
       border: solid 1px $primary-red;
       text-align: center;
-      line-height: 40.5px;
+      line-height: rem-calc(40.5px);
       font-size: 0;
       img{
         vertical-align: middle;
         margin: 0;
         padding: 0;
         display: inline-block;
-        width: 210px;
+        width: rem-calc(210px);
         border: none;
         outline: none;
       }
     }
     .nameList{
       position: relative;
-      height: 120px;
+      height: rem-calc(120px);
       background-color: $yellow-82;
-      border: 1px dotted $primary-red;
+      border: rem-calc(1px) dotted $primary-red;
       border-top: none;
       overflow: hidden;
       p{
-        font-size: 15px;
+        font-size: rem-calc(15px);
         text-align: center;
         line-height: 1.6;
         color: #48453c;
