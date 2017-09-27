@@ -1,15 +1,35 @@
 <template>
-  <canvas
-    class="mainCanvas"
-    :id="id"
-    :width="canvasWidth"
-    :height="canvasHeight"
-    :style="{ width: `${canvasWidth / 2}px`, height: `${canvasHeight / 2}px` }"
-  >
-  </canvas>
+  <div style="position: relative">
+    <div class="remainCount">
+      剩余抽奖次数：<span>3</span> 次
+    </div>
+    <canvas
+      class="mainCanvas"
+      :id="id"
+      :width="canvasWidth"
+      :height="canvasHeight"
+      :style="{ width: `${canvasWidth / 2}px`, height: `${canvasHeight / 2}px` }"
+    >
+    </canvas>
+  </div>
 </template>
 
 <style lang="scss" scoped>
+  @import '~theme/colors';
+  @import '~theme/function';
+  .remainCount{
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 8%;
+    white-space: nowrap;
+    color: $yellow-82;
+    font-size: rem-calc(18px);
+    span{
+      color: $white;
+      font-size: rem-calc(36px);
+    }
+  }
   canvas{
     border: none;
     -webkit-tap-highlight-color: transparent;
@@ -128,14 +148,6 @@
           .lineTo(this.posX, this.innerFoundationTopY)
           .closePath()
         foundationContainer.addChild(foundationInner)
-        const fText = new createjs.Text('剩余抽奖次数：3 次', `${rem(36)}px Arial`, '#fcd958')
-        fText.x = this.posX
-        fText.y = this.foundationBottomY - this.foundationTextOffsetY
-        fText.textBaseline = 'center'
-        const bounds = fText.getBounds()
-        fText.regX = bounds.width / 2
-        fText.regY = bounds.height / 2
-        foundationContainer.addChild(fText)
         stage.addChild(foundationContainer)
       },
       drawBase(stage) {
@@ -292,7 +304,6 @@
       this.innerFoundationTopY = this.foundationTopY + (this.outerRadius * (4 / 65))
       this.innerFoundationBottomY = this.foundationBottomY - (this.outerRadius * (15 / 325))
       this.innerFoundationXOffset = this.outerRadius * (208 / 325)
-      this.foundationTextOffsetY = this.outerRadius * (34 / 325)
       this.innerFoundationStrokeWidth = this.outerRadius * (8 / 325)
       if (!this.stage) {
         this.stage = new createjs.Stage(this.id)
