@@ -1,8 +1,10 @@
 <template>
   <canvas
+    class="mainCanvas"
     :id="id"
     :width="canvasWidth"
     :height="canvasHeight"
+    :style="{ width: `${canvasWidth / 2}px`, height: `${canvasHeight / 2}px` }"
   >
   </canvas>
 </template>
@@ -15,11 +17,10 @@
 </style>
 
 <script>
-  import map from 'lodash/map'
+  import isEmpty from 'lodash/isEmpty'
   import forEach from 'lodash/forEach'
-//  import bgImgUrl from '@/assets/bg.png'
+  import rem from '@/utils/canvasRem'
   import arrowImgUrl from '@/assets/arrow.png'
-  import { preloadImage } from '@/utils/imageUtil'
   import prizeList from '@/constants/prizeData'
   import TextArc from '@/utils/TextArc'
 
@@ -29,6 +30,12 @@
       return {}
     },
     props: {
+      prizeImageList: {
+        type: Array,
+        default() {
+          return []
+        },
+      },
       paddingTop: {
         type: Number,
         default: document.body.clientWidth * 0.52,
@@ -47,26 +54,22 @@
       },
     },
     methods: {
-      dottedLine(radius, name, color) {
+      dottedLine(name, color) {
         const dottedContainer = new createjs.Container()
         dottedContainer.name = name
         // light
         const totalCircle = 11
-        const dotRadius = radius - 7
         for( let i =0; i < totalCircle; i ++) { // eslint-disable-line
           const lightPlate = new createjs.Shape()
           const angle = i * 2 * (Math.PI / totalCircle)
-          const x = this.posX + (Math.cos(angle) * dotRadius)
-          const y = this.posY + (Math.sin(angle) * dotRadius)
+          const x = this.posX + (Math.cos(angle) * this.dottedRadius)
+          const y = this.posY + (Math.sin(angle) * this.dottedRadius)
           lightPlate.graphics.beginFill(color)
-          lightPlate.graphics.arc(x, y, 3.25, 0, Math.PI * 2, false)
+          lightPlate.graphics.arc(x, y, this.dottedCircleRadius, 0, Math.PI * 2, false)
           lightPlate.graphics.closePath()
           dottedContainer.addChild(lightPlate)
         }
         return dottedContainer
-      },
-      getImageList() {
-        return [arrowImgUrl].concat(map(prizeList, prize => prize.icon))
       },
       doAnimate(event) {
         const prizePlate = this.stage.getChildByName('prizePlate')
@@ -79,7 +82,7 @@
         const pauseLabel = arrowContainer.getChildByName('pauseLabel')
         if (startLabel.visible) {
           createjs.Ticker.addEventListener('tick', this.doAnimate)
-          createjs.Ticker.setFPS(30)
+          createjs.Ticker.setFPS(100)
           startLabel.visible = false
           pauseLabel.visible = true
         } else {
@@ -93,14 +96,14 @@
           this.stage.update()
         }
       },
-      generateLabel(text, name, visible) {
+      generateLabel(text, name, fontSize, visible) {
         // arrow text
-        const arrowText = new createjs.Text(text, '18px Arial', '#ffffff')
+        const arrowText = new createjs.Text(text, `${rem(fontSize)}px Arial`, '#ffffff')
         arrowText.name = name
         arrowText.x = this.posX
-        arrowText.y = this.posY + 10
+        arrowText.y = this.posY + this.arrowTextOffsetY
         arrowText.textAlign = 'center'
-        arrowText.textBaseline = 'bottom'
+        arrowText.textBaseline = 'center'
         arrowText.visible = visible
         return arrowText
       },
@@ -108,28 +111,26 @@
         // foundation
         const foundationContainer = new createjs.Container()
         const foundation = new createjs.Shape()
-        const bottomY = this.posY + this.outerRadius + (this.canvasWidth * 0.15)
-        const leftBottomX = this.posX - (this.canvasWidth * 0.307)
-        const rightBottomX = this.posX + (this.canvasWidth * 0.307)
-        foundation.graphics.moveTo(this.posX, this.posY - (this.canvasWidth * 0.13))
+        foundation.graphics.moveTo(this.posX, this.foundationTopY)
         foundation.graphics.beginFill('#f15955')
-          .lineTo(leftBottomX, bottomY)
-          .lineTo(rightBottomX, bottomY)
-          .lineTo(this.posX, this.posY)
+          .lineTo(this.posX - this.foundationXOffset, this.foundationBottomY)
+          .lineTo(this.posX + this.foundationXOffset, this.foundationBottomY)
+          .lineTo(this.posX, this.foundationTopY)
           .closePath()
+        foundation.shadow = new createjs.Shadow('#c6a118', 0, this.innerFoundationStrokeWidth, this.innerFoundationStrokeWidth * 3)
         foundationContainer.addChild(foundation)
         const foundationInner = new createjs.Shape()
-        foundationInner.graphics.moveTo(this.posX, this.posY + 10)
-        foundationInner.graphics.setStrokeStyle(4)
+        foundationInner.graphics.moveTo(this.posX, this.innerFoundationTopY)
+        foundationInner.graphics.setStrokeStyle(this.innerFoundationStrokeWidth)
           .beginStroke('#dd4642')
-          .lineTo(leftBottomX + 14, bottomY - 7)
-          .lineTo(rightBottomX - 14, bottomY - 7)
-          .lineTo(this.posX, this.posY + 10)
+          .lineTo(this.posX - this.innerFoundationXOffset, this.innerFoundationBottomY)
+          .lineTo(this.posX + this.innerFoundationXOffset, this.innerFoundationBottomY)
+          .lineTo(this.posX, this.innerFoundationTopY)
           .closePath()
         foundationContainer.addChild(foundationInner)
-        const fText = new createjs.Text('剩余抽奖次数：3 次', '16px Arial', '#fcd958')
+        const fText = new createjs.Text('剩余抽奖次数：3 次', `${rem(36)}px Arial`, '#fcd958')
         fText.x = this.posX
-        fText.y = bottomY - 17
+        fText.y = this.foundationBottomY - this.foundationTextOffsetY
         fText.textBaseline = 'center'
         const bounds = fText.getBounds()
         fText.regX = bounds.width / 2
@@ -143,11 +144,11 @@
         // base plate
         const basePlate = new createjs.Shape()
         basePlate.graphics.beginFill('#f15955').drawCircle(this.posX, this.posY, this.outerRadius)
-        basePlate.shadow = new createjs.Shadow('#dd4642', 0, 4, 0)
+        basePlate.shadow = new createjs.Shadow('#dd4642', 0, this.innerFoundationStrokeWidth, 0)
         baseContainer.addChild(basePlate)
         // light
-        const dottedCircleLight = this.dottedLine(this.outerRadius, 'light', '#fbf08f')
-        const dottedCircleShadow = this.dottedLine(this.outerRadius, 'shadow', '#f8aca9')
+        const dottedCircleLight = this.dottedLine('light', '#fbf08f')
+        const dottedCircleShadow = this.dottedLine('shadow', '#f8aca9')
         dottedCircleShadow.x = this.posX
         dottedCircleShadow.y = this.posY
         dottedCircleShadow.regX = this.posX
@@ -172,7 +173,9 @@
         const posY = this.posY
         let cumulativeAngle = -(Math.PI / 2)
         const sectorAngle = this.sectorAngle
-        forEach(prizeList, (prize, idx) => {
+        const prizeRadius = this.middleRadius * 0.55
+        const prizeImgSize = prizeRadius * 0.6
+        forEach(this.prizeImageList, (prize, idx) => {
           const container = new createjs.Container()
           const endAngle = cumulativeAngle + sectorAngle
           // sector base
@@ -214,7 +217,7 @@
           container.addChild(sectorBoxArcLine)
           // label
           const labelRadius = this.middleRadius * 0.42
-          const label = new TextArc(prize.title, '14px Arial', '#f15955', labelRadius)
+          const label = new TextArc(prize.title, `${rem(30)}px Arial`, '#f15955', labelRadius)
           const labelAngle = cumulativeAngle + (sectorAngle / 2.0)
           const labelX = posX + (labelRadius * Math.cos(labelAngle))
           const labelY = posY + (labelRadius * Math.sin(labelAngle))
@@ -224,15 +227,13 @@
           label.rotation = ((labelAngle * 180) / Math.PI) + 90
           container.addChild(label)
           // image
-          const prizeImage = new Image()
-          prizeImage.src = prize.icon
-          const prizeBitMapImg = new createjs.Bitmap(prize.icon)
-          const prizeRadius = this.middleRadius * 0.5
+          const prizeImage = prize.image
+          const prizeBitMapImg = new createjs.Bitmap(prizeImage)
           const prizeAngle = cumulativeAngle + (sectorAngle / 2.0)
           const prizeX = posX + (prizeRadius * Math.cos(prizeAngle))
           const prizeY = posY + (prizeRadius * Math.sin(prizeAngle))
-          prizeBitMapImg.scaleX = (prizeRadius * 0.7) / prizeImage.width
-          prizeBitMapImg.scaleY = (prizeRadius * 0.7) / prizeImage.height
+          prizeBitMapImg.scaleX = prizeImgSize / prizeImage.width
+          prizeBitMapImg.scaleY = prizeImgSize / prizeImage.height
           prizeBitMapImg.x = prizeX
           prizeBitMapImg.y = prizeY
           prizeBitMapImg.regX = prizeImage.width / 2
@@ -248,25 +249,19 @@
         middleContainer.regY = this.posY
         stage.addChild(middleContainer)
       },
-//      setBg(stage, bgImage) {
-//        const bigMapImg = new createjs.Bitmap(bgImage)
-//        bigMapImg.scaleX = this.canvasWidth / bgImage.width
-//        bigMapImg.scaleY = this.canvasHeight / bgImage.height
-//        stage.addChild(bigMapImg);
-//      },
       drawArrow(stage) {
         const arrowContainer = new createjs.Container()
         arrowContainer.name = 'arrowContainer'
         // arrow
         const arrow = new createjs.Bitmap(arrowImgUrl)
-        arrow.scaleX = 70 / 210
-        arrow.scaleY = 78.33 / 235
-        arrow.x = this.posX - 35
-        arrow.y = this.posY - (78.33 / 2) - 4
+        arrow.scaleX = this.arrowWidth / 210
+        arrow.scaleY = this.arrowHeight / 235
+        arrow.x = this.posX - (this.arrowWidth / 2)
+        arrow.y = this.posY - (this.arrowHeight / 2) - this.arrowOffsetY
         arrowContainer.addChild(arrow)
         // start arrow text
-        const startLabel = this.generateLabel('GO', 'startLabel', true)
-        const pauseLabel = this.generateLabel('STOP', 'pauseLabel', false)
+        const startLabel = this.generateLabel('GO', 'startLabel', 40, true)
+        const pauseLabel = this.generateLabel('STOP', 'pauseLabel', 40, false)
         arrowContainer.addChild(startLabel)
         arrowContainer.addChild(pauseLabel)
         arrowContainer.shadow = new createjs.Shadow('#ffffff', 0, 0, 100)
@@ -278,24 +273,34 @@
     mounted() {
       const prizeCount = prizeList.length || 1
       this.posX = this.canvasWidth / 2
-      this.posY = this.posX + this.paddingTop
       this.sectorAngle = (Math.PI * 2) / prizeCount
-      this.outerRadius = (this.canvasWidth / 2) - 25
-      this.middleRadius = (this.canvasWidth / 2) - 43
-      this.middleBorderWidth = 4
-      this.innerRadius = (this.canvasWidth / 2) - 78.5
+      this.outerRadius = (this.canvasWidth / 2) * (13 / 15)
+      this.dottedRadius = (311 / 325) * this.outerRadius
+      this.dottedCircleRadius = (13 / 650) * this.outerRadius
+      this.posY = this.outerRadius + (this.canvasWidth * 0.53)
+      this.middleRadius = this.outerRadius * (289 / 325)
+      this.middleBorderWidth = this.outerRadius * (8 / 325)
+      this.innerRadius = this.outerRadius * (218 / 325)
+      this.arrowHeight = this.outerRadius * 1.5 * (47 / 130)
+      this.arrowWidth = this.outerRadius * 1.5 * (21 / 65)
+      this.arrowOffsetY = (this.outerRadius * 1.5 * (5 / 130)) / 2
+      this.arrowTextOffsetY = this.outerRadius * 1.5 * (9 / 325)
+      this.foundationTopY = this.posY - this.outerRadius
+      this.foundationBottomY = this.posY + (this.outerRadius * (1 + (22 / 65)))
+      this.foundationXOffset = this.outerRadius * (93 / 130)
+      this.innerFoundationTopY = this.foundationTopY + (this.outerRadius * (4 / 65))
+      this.innerFoundationBottomY = this.foundationBottomY - (this.outerRadius * (15 / 325))
+      this.innerFoundationXOffset = this.outerRadius * (208 / 325)
+      this.foundationTextOffsetY = this.outerRadius * (34 / 325)
+      this.innerFoundationStrokeWidth = this.outerRadius * (8 / 325)
       if (!this.stage) {
         this.stage = new createjs.Stage(this.id)
-        preloadImage(this.getImageList()).then(() => {
-//          const bgImg = new Image()
-//          bgImg.src = bgImgUrl
-//          this.setBg(this.stage, bgImg)
+        if (!isEmpty(this.prizeImageList)) {
           this.drawFoundation(this.stage)
           this.drawBase(this.stage)
-          this.drawMiddle(this.stage, this.prizeImg)
+          this.drawMiddle(this.stage)
           this.drawArrow(this.stage)
-//          this.stage.update()
-        })
+        }
       }
     },
   }

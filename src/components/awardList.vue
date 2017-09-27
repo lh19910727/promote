@@ -27,8 +27,12 @@
       background-color: $primary-red;
       border: solid 1px $primary-red;
       text-align: center;
+      line-height: 40.5px;
+      font-size: 0;
       img{
         vertical-align: middle;
+        margin: 0;
+        padding: 0;
         display: inline-block;
         width: 210px;
         border: none;
@@ -69,7 +73,9 @@
     props: {
       awardList: {
         type: Array,
-        default: [],
+        default() {
+          return []
+        },
       },
     },
     methods: {
@@ -78,7 +84,6 @@
         const originEle = this.$refs.origin
         const cloneEle = this.$refs.clone
         cloneEle.innerHTML = originEle.innerHTML
-        console.log('-----speed', speed)
         const rolling = () => {
           if (marqueeBox.scrollTop === cloneEle.offsetTop) {
             marqueeBox.scrollTop = 0

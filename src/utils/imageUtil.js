@@ -1,18 +1,21 @@
 import map from 'lodash/map'
 
-export function preloadImage(imgUrlList) {
-  if (!imgUrlList) {
+export function preloadImage(imgList) {
+  if (!imgList) {
     return false
   }
-  return Promise.all(map(imgUrlList, imgUrl => new Promise((resolve, reject) => {
+  return Promise.all(map(imgList, img => new Promise((resolve, reject) => {
     const image = new Image()
     image.onload = () => {
-      resolve(image)
+      resolve({
+        image,
+        title: img.title,
+      })
     }
     image.onerror = (error) => {
       reject(error)
     }
-    image.src = imgUrl
+    image.src = img.icon
   })))
 }
 

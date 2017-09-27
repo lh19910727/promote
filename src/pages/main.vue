@@ -1,9 +1,11 @@
 <template>
   <div class="mainContainer">
     <prize-plate
+      v-if="prizeImageList"
       id="mainCanvas"
       :canvas-width="canvasWidth"
       :canvas-height="canvasHeight"
+      :prize-image-list="prizeImageList"
     >
     </prize-plate>
     <award-list :award-list="awardListData"></award-list>
@@ -12,7 +14,6 @@
 </template>
 
 <script>
-
   import prizePlate from '@/components/prizePlate'
   import awardList from '@/components/awardList'
   import activityDescription from '@/components/activityDescription'
@@ -20,21 +21,31 @@
   import awardListData from '@/constants/awardListData'
   import activityData from '@/constants/activityData'
 
+  import { preloadImage } from '@/utils/imageUtil'
+  import prizeList from '@/constants/prizeData'
+
   export default {
     name: 'main',
     data() {
       return {
-        canvasWidth: document.body.clientWidth,
-        canvasHeight: document.body.clientWidth * 1.63,
+        canvasWidth: document.body.clientWidth * 2,
+        canvasHeight: document.body.clientWidth * 1.63 * 2,
         awardListData,
         activityData,
+        prizeImageList: null,
       }
     },
-    methods: {},
+    methods: {
+    },
     components: {
       prizePlate,
       awardList,
       activityDescription,
+    },
+    created() {
+      preloadImage(prizeList).then((results) => {
+        this.prizeImageList = results
+      })
     },
   }
 </script>
