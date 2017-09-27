@@ -100,20 +100,23 @@
         const arrowContainer = this.stage.getChildByName('arrowContainer')
         const startLabel = arrowContainer.getChildByName('startLabel')
         const pauseLabel = arrowContainer.getChildByName('pauseLabel')
+        const prizePlate = this.stage.getChildByName('prizePlate')
         if (startLabel.visible) {
-          createjs.Ticker.addEventListener('tick', this.doAnimate)
-          createjs.Ticker.setFPS(100)
+          prizePlate.rotation = 0
+          createjs.Tween.get(prizePlate, {
+            loop: true,
+            override: true,
+          }, true).to({ rotation: 360 }, 400)
           startLabel.visible = false
           pauseLabel.visible = true
         } else {
           startLabel.visible = true
           pauseLabel.visible = false
-          createjs.Ticker.removeEventListener('tick', this.doAnimate)
-          const prizePlate = this.stage.getChildByName('prizePlate')
           // 随机抽中一个
-          prizePlate.rotation = ((Math.floor(prizeList.length * Math.random()) + 0.5)
+          const endRotation = ((Math.floor(prizeList.length * Math.random()) + 0.5)
             * this.sectorAngle * 180) / Math.PI
-          this.stage.update()
+          createjs.Tween.get(prizePlate, { loop: false, override: true })
+            .to({ rotation: endRotation }, 0)
         }
       },
       generateLabel(text, name, fontSize, visible) {
