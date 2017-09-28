@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative">
     <div class="remainCount">
-      剩余抽奖次数：<span>3</span> 次
+      剩余抽奖次数：<span>{{remainCount}}</span> 次
     </div>
     <canvas
       class="mainCanvas"
@@ -41,7 +41,6 @@
   import forEach from 'lodash/forEach'
   import rem from '@/utils/canvasRem'
   import arrowImgUrl from '@/assets/arrow.png'
-  import prizeList from '@/constants/prizeData'
   import TextArc from '@/utils/TextArc'
 
   export default {
@@ -50,15 +49,19 @@
       return {}
     },
     props: {
+      needReset: {
+        type: Boolean,
+        default: false,
+      },
+      remainCount: {
+        type: Number,
+        default: 0,
+      },
       prizeImageList: {
         type: Array,
         default() {
           return []
         },
-      },
-      paddingTop: {
-        type: Number,
-        default: document.body.clientWidth * 0.52,
       },
       canvasWidth: {
         type: Number,
@@ -91,32 +94,34 @@
         }
         return dottedContainer
       },
-      doAnimate(event) {
+      resetPlate() {
         const prizePlate = this.stage.getChildByName('prizePlate')
-        prizePlate.rotation += (event.delta / 500) * 360
-        this.stage.update()
+        prizePlate.rotation = 0
       },
       animatePlate() {
         const arrowContainer = this.stage.getChildByName('arrowContainer')
         const startLabel = arrowContainer.getChildByName('startLabel')
         const pauseLabel = arrowContainer.getChildByName('pauseLabel')
         const prizePlate = this.stage.getChildByName('prizePlate')
+        if (this.remainCount <= 0) return
         if (startLabel.visible) {
           prizePlate.rotation = 0
           createjs.Tween.get(prizePlate, {
             loop: true,
             override: true,
-          }, true).to({ rotation: 360 }, 400)
+          }, true).to({ rotation: 360 * 100 }, 400 * 90)
           startLabel.visible = false
           pauseLabel.visible = true
+          this.$emit('onstart')
         } else {
           startLabel.visible = true
           pauseLabel.visible = false
           // 随机抽中一个
-          const endRotation = ((Math.floor(prizeList.length * Math.random()) + 0.5)
-            * this.sectorAngle * 180) / Math.PI
+          const result = Math.floor(this.prizeImageList.length * Math.random())
+          const endRotation = ((result + 0.5) * this.sectorAngle * 180) / Math.PI
           createjs.Tween.get(prizePlate, { loop: false, override: true })
             .to({ rotation: endRotation }, 0)
+          this.$emit('onend', result)
         }
       },
       generateLabel(text, name, fontSize, visible) {
@@ -129,6 +134,16 @@
         arrowText.textBaseline = 'center'
         arrowText.visible = visible
         return arrowText
+      },
+      getPrizeLabelFontSize() {
+        const len = this.prizeImageList.length
+        if (len <= 6) {
+          return rem(30)
+        }
+        if (len > 6 && len < 9) {
+          return rem(25)
+        }
+        return rem(20)
       },
       drawFoundation(stage) {
         // foundation
@@ -232,7 +247,7 @@
           container.addChild(sectorBoxArcLine)
           // label
           const labelRadius = this.middleRadius * 0.42
-          const label = new TextArc(prize.title, `${rem(30)}px Arial`, '#f15955', labelRadius)
+          const label = new TextArc(prize.title, `${this.getPrizeLabelFontSize()}px Arial`, '#f15955', labelRadius)
           const labelAngle = cumulativeAngle + (sectorAngle / 2.0)
           const labelX = posX + (labelRadius * Math.cos(labelAngle))
           const labelY = posY + (labelRadius * Math.sin(labelAngle))
@@ -269,6 +284,7 @@
         arrowContainer.name = 'arrowContainer'
         // arrow
         const arrow = new createjs.Bitmap(arrowImgUrl)
+        arrow.name = 'arrow'
         arrow.scaleX = this.arrowWidth / 210
         arrow.scaleY = this.arrowHeight / 235
         arrow.x = this.posX - (this.arrowWidth / 2)
@@ -284,9 +300,17 @@
         arrowContainer.addEventListener('click', this.animatePlate)
         stage.addChild(arrowContainer)
       },
+      disableLottery() {
+        const arrowInstance = this.stage
+        arrowInstance.filters = [
+          new createjs.BlurFilter(2, 2, 2),
+          new createjs.ColorMatrixFilter(new createjs.ColorMatrix(0, 0, -100, 0)),
+        ]
+        arrowInstance.cache(0, 0, this.canvasWidth, this.canvasHeight)
+      },
     },
     mounted() {
-      const prizeCount = prizeList.length || 1
+      const prizeCount = this.prizeImageList.length || 1
       this.posX = this.canvasWidth / 2
       this.sectorAngle = (Math.PI * 2) / prizeCount
 //      this.outerRadius = (this.canvasWidth / 2) * (13 / 15)
@@ -316,7 +340,22 @@
           this.drawMiddle(this.stage)
           this.drawArrow(this.stage)
         }
+        if (this.remainCount === 0) {
+          this.disableLottery()
+        }
       }
+    },
+    watch: {
+      needReset(val) {
+        if (val === true) {
+          this.resetPlate()
+        }
+      },
+      remainCount(val) {
+        if (val <= 0) {
+          this.disableLottery()
+        }
+      },
     },
   }
 

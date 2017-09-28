@@ -8,31 +8,41 @@ import coupon from '@/assets/prize/coupon.png'
 export default [{
   title: '爱奇艺会员',
   icon: member,
+  code: 1,
 }, {
   title: '小米手环',
   icon: strap,
+  code: 2,
 }, {
   title: '感谢参与',
   icon: thanks,
+  code: 0,
 }, {
   title: '小米体重秤',
   icon: scale,
+  code: 4,
 }, {
   title: '感谢参与',
   icon: thanks,
+  code: 0,
 }, {
   title: '10元优惠券',
   icon: coupon,
-}, /*  {
-  title: '感谢参与',
-  icon: thanks,
+  code: 6,
 }, {
   title: '感谢参与',
   icon: thanks,
+  code: 0,
 }, {
   title: '感谢参与',
   icon: thanks,
+  code: 0,
 }, {
   title: '感谢参与',
   icon: thanks,
-}*/]
+  code: 0,
+}, {
+  title: '感谢参与',
+  icon: thanks,
+  code: 0,
+}]
