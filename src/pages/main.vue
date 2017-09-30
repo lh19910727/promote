@@ -93,6 +93,6 @@
     background-size: 100% auto;
     background-repeat: no-repeat;
     overflow: scroll;
-    background-color: $yellow-52;
+    background-color: $yellow-23;
   }
 </style>

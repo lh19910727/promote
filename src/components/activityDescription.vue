@@ -2,7 +2,7 @@
   <div class="activityContainer">
     <h2>
       <div class="line"></div>
-      <span>活动说明</span>
+      <img :src="descriptionImg" />
     </h2>
     <div class="descriptionList">
       <p
@@ -24,15 +24,15 @@
       position: relative;
       height: 20px;
       line-height: 20px;
-      span{
+      img{
         display: block;
         position: absolute;
-        padding: 0 10px;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        color: $primary-red;
-        background: $yellow-52;
+        width: rem-calc(85px);
+        background-color: $yellow-52;
+        padding: 0 rem-calc(10px);
       }
       &:before,&:after{
         content: '';
@@ -81,12 +81,14 @@
 
 <script>
   import titleTextImg from '@/assets/awardText.png'
+  import descriptionImg from '@/assets/description.png'
 
   export default {
     name: 'awardList',
     data() {
       return {
         titleTextImg,
+        descriptionImg,
       }
     },
     props: {

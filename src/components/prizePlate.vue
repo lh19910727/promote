@@ -28,6 +28,8 @@
     span{
       color: $white;
       font-size: rem-calc(36px);
+      font-weight: bold;
+      font-family: Arial;
     }
   }
   canvas{
@@ -109,7 +111,7 @@
           createjs.Tween.get(prizePlate, {
             loop: true,
             override: true,
-          }, true).to({ rotation: 360 * 100 }, 400 * 90)
+          }, true).to({ rotation: 360 }, 1000)
           startLabel.visible = false
           pauseLabel.visible = true
           this.$emit('onstart')
@@ -126,7 +128,7 @@
       },
       generateLabel(text, name, fontSize, visible) {
         // arrow text
-        const arrowText = new createjs.Text(text, `${rem(fontSize)}px Arial`, '#ffffff')
+        const arrowText = new createjs.Text(text, `bold ${rem(fontSize)}px Arial`, '#ffffff')
         arrowText.name = name
         arrowText.x = this.posX
         arrowText.y = this.posY + this.arrowTextOffsetY
@@ -247,7 +249,7 @@
           container.addChild(sectorBoxArcLine)
           // label
           const labelRadius = this.middleRadius * 0.42
-          const label = new TextArc(prize.title, `${this.getPrizeLabelFontSize()}px Arial`, '#f15955', labelRadius)
+          const label = new TextArc(prize.title, `bold ${this.getPrizeLabelFontSize()}px Arial`, '#f15955', labelRadius)
           const labelAngle = cumulativeAngle + (sectorAngle / 2.0)
           const labelX = posX + (labelRadius * Math.cos(labelAngle))
           const labelY = posY + (labelRadius * Math.sin(labelAngle))
@@ -291,8 +293,8 @@
         arrow.y = this.posY - (this.arrowHeight / 2) - this.arrowOffsetY
         arrowContainer.addChild(arrow)
         // start arrow text
-        const startLabel = this.generateLabel('GO', 'startLabel', 40, true)
-        const pauseLabel = this.generateLabel('STOP', 'pauseLabel', 40, false)
+        const startLabel = this.generateLabel('开始', 'startLabel', 40, true)
+        const pauseLabel = this.generateLabel('结束', 'pauseLabel', 40, false)
         arrowContainer.addChild(startLabel)
         arrowContainer.addChild(pauseLabel)
         arrowContainer.shadow = new createjs.Shadow('#ffffff', 0, 0, 100)
@@ -301,10 +303,10 @@
         stage.addChild(arrowContainer)
       },
       disableLottery() {
-        const arrowInstance = this.stage
+        const arrowInstance = this.stage.getChildByName('arrowContainer')
         arrowInstance.filters = [
           new createjs.BlurFilter(2, 2, 2),
-          new createjs.ColorMatrixFilter(new createjs.ColorMatrix(0, 0, -100, 0)),
+          new createjs.ColorMatrixFilter(new createjs.ColorMatrix(30, 0, -100, 0)),
         ]
         arrowInstance.cache(0, 0, this.canvasWidth, this.canvasHeight)
       },

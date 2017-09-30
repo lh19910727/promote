@@ -31,6 +31,8 @@
       line-height: rem-calc(40.5px);
       font-size: 0;
       img{
+        position: relative;
+        top: rem-calc(-3px);
         vertical-align: middle;
         margin: 0;
         padding: 0;
