@@ -14,11 +14,5 @@ export default new Router({
         default: MainPage,
       },
     },
-    {
-      path: '/404',
-      alias: '*',
-      name: 'notFound',
-      component: resolve => require(['@/pages/notFound'], resolve),
-    },
   ],
 });
