@@ -6,9 +6,10 @@ Vue.use(Router);
 
 export default new Router({
   mode: 'history',
+  base: '/promote/wheel/',
   routes: [
     {
-      path: '/',
+      path: '/:id*',
       name: 'main',
       components: {
         default: MainPage,
