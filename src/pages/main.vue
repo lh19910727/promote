@@ -54,6 +54,7 @@
       ...mapActions('activityInfo', ['loadActivity']),
       ...mapActions('launchLottery', ['launchLottery']),
       ...mapActions('luckyList', ['loadLuckyList']),
+      ...mapActions('wechatConfig', ['configWechat']),
       onHide() {
         this.resetPos = true
       },
@@ -62,6 +63,35 @@
       },
       onStart() {
         this.resetPos = false
+      },
+      onShare() {
+        const { shareTitle, shareDetail, shareIcon } = this.activity
+        const { protocol, hostname, pathname, port } = window.location
+        const link = `${protocol}://${hostname}:${port}${pathname}`
+        const shareConfig = {
+          title: shareTitle,
+          desc: shareDetail,
+          imgUrl: `${protocol}://${hostname}:${port}${shareIcon}`,
+          link,
+          success: () => {},
+          cancel: () => {},
+        }
+        console.log('---shareConfig', shareConfig)
+        wx.ready(() => {
+          wx.onMenuShareTimeline(shareConfig)
+          wx.onMenuShareAppMessage(shareConfig)
+        })
+      },
+      setConfig() {
+        const { appId, timestamp, nonceStr, signature } = this.config
+        wx.config({
+          debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+          appId, // 必填，公众号的唯一标识
+          timestamp, // 必填，生成签名的时间戳
+          nonceStr, // 必填，生成签名的随机串
+          signature, // 必填，签名，见附录1
+          jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
+        })
       },
     },
     components: {
@@ -85,15 +115,23 @@
         'isWinner',
       ]),
       ...mapGetters('luckyList', ['list']),
+      ...mapState('wechatConfig', ['config']),
       luckyPrize() {
         return find(this.awardImgs, { id: this.awardId })
       },
       luckyIndex() {
         return findIndex(this.awardImgs, { id: this.awardId })
       },
+      configInfoReady() {
+        console.log('----this.config', this.config)
+        return !(isEmpty(this.config) || isEmpty(this.activity))
+      },
     },
     created() {
       this.loadActivity({ activityId: 1, userId: '680464' })
+      this.configWechat({
+        url: window.location.href,
+      })
     },
     watch: {
       awardImgs(newVal) {
@@ -111,6 +149,12 @@
       isRevealWinner(val) {
         if (val === 'Y') {
           this.loadLuckyList({ activityId: 1, userId: '680464' })
+        }
+      },
+      configInfoReady(val) {
+        if (val) {
+          this.setConfig()
+          this.onShare()
         }
       },
     },

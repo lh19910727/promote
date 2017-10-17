@@ -37,5 +37,6 @@ module.exports = {
   },
   'globals': {
     'createjs': true,
+    'wx': true,
   },
 }

@@ -26,9 +26,11 @@ const loadLuckyList = (params) => {
   const endPoint = `activityResult/listWinnerByActivity/${activityId}`
   return Vue.http.get(endPoint, params)
 }
+const wechatConfig = (params) => Vue.http.post('wechat/config', params, { emulateJSON: true })
 
 export default {
   loadActivityInfo,
   launchLottery,
   loadLuckyList,
+  wechatConfig,
 }

@@ -4,6 +4,7 @@ import createLogger from 'vuex/dist/logger'
 
 
 import ui from './modules/ui'
+import wechatConfig from './modules/wechatConfig'
 import activityInfo from './modules/activityInfo'
 import launchLottery from './modules/launchLottery'
 import luckyList from './modules/luckyList'
@@ -18,6 +19,7 @@ const plugins = process.env.NODE_ENV === 'production' ? [] : [createLogger()]
 export default new Store({
   modules: {
     ui,
+    wechatConfig,
     activityInfo,
     launchLottery,
     luckyList,
