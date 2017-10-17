@@ -17,7 +17,6 @@ const actions = {
     commit(WECHAT_CONFIG_BEGIN)
     request.wechatConfig(params).then(response => {
       const { data: { value, success, errorCode } } = response
-      console.log('----data', value)
       if (success) {
         commit(WECHAT_CONFIG, value)
       } else {

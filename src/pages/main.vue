@@ -66,17 +66,16 @@
       },
       onShare() {
         const { shareTitle, shareDetail, shareIcon } = this.activity
-        const { protocol, hostname, pathname, port } = window.location
-        const link = `${protocol}://${hostname}:${port}${pathname}`
+        const { protocol, hostname, pathname } = window.location
+        const link = `${protocol}//${hostname}${pathname}`
         const shareConfig = {
           title: shareTitle,
           desc: shareDetail,
-          imgUrl: `${protocol}://${hostname}:${port}${shareIcon}`,
+          imgUrl: `${protocol}//${hostname}${shareIcon}`,
           link,
           success: () => {},
           cancel: () => {},
         }
-        console.log('---shareConfig', shareConfig)
         wx.ready(() => {
           wx.onMenuShareTimeline(shareConfig)
           wx.onMenuShareAppMessage(shareConfig)
@@ -123,7 +122,6 @@
         return findIndex(this.awardImgs, { id: this.awardId })
       },
       configInfoReady() {
-        console.log('----this.config', this.config)
         return !(isEmpty(this.config) || isEmpty(this.activity))
       },
     },
@@ -151,8 +149,8 @@
           this.loadLuckyList({ activityId: 1, userId: '680464' })
         }
       },
-      configInfoReady(val) {
-        if (val) {
+      configInfoReady(newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
           this.setConfig()
           this.onShare()
         }
