@@ -1,38 +1,34 @@
 import Vue from 'vue'
 import VueResouce from 'vue-resource'
-import store from '@/store'
-
-import {
-  PENDING_REQUEST_COUNT_INCRUMENT,
-  PENDING_REQUEST_COUNT_DECRUMENT,
-} from '@/store/mutation-types'
-
 
 Vue.use(VueResouce)
 Vue.http.options = {
   root: `//${document.domain}:${window.location.port}`,
   headers: {
-    'Content-Type': 'application/x-www-form-urlencoded',
+    'Content-Type': 'application/json',
   },
-  emulateJSON: true,
   loadingUIRequired: true,
 }
-Vue.http.interceptors.push((request, next) => {
-  const loadingUIRequired = request.loadingUIRequired;
-  if (loadingUIRequired) {
-    store.commit(`ui/${PENDING_REQUEST_COUNT_INCRUMENT}`)
-  }
-  next(() => {
-    if (loadingUIRequired) {
-      store.commit(`ui/${PENDING_REQUEST_COUNT_DECRUMENT}`)
-    }
-  })
-})
 
-const queryAdvertise = (params) => Vue.http.post('advertise/queryAdvertise', params)
-const queryProducts = (params) => Vue.http.get('product/queryProduct', params)
+const loadActivityInfo = (params) => {
+  const { activityId, userId } = params
+  const endPoint = `activityInfo/info/${activityId}/${userId}`
+  return Vue.http.get(endPoint)
+}
+
+const launchLottery = (params) => {
+  const endPoint = 'activityInfo/prizeDraw'
+  return Vue.http.post(endPoint, params, { headers: { 'Content-Type': 'application/json' } })
+}
+
+const loadLuckyList = (params) => {
+  const { activityId } = params
+  const endPoint = `activityResult/listWinnerByActivity/${activityId}`
+  return Vue.http.get(endPoint, params)
+}
 
 export default {
-  queryAdvertise,
-  queryProducts,
+  loadActivityInfo,
+  launchLottery,
+  loadLuckyList,
 }

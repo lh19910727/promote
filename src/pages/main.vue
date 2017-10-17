@@ -7,32 +7,36 @@
       :canvas-height="canvasHeight"
       :prize-image-list="prizeImageList"
       :remain-count="remainCount"
-      :need-reset="needReset"
+      :reset-pos="resetPos"
+      :result="luckyIndex"
       @onend="onEnd"
       @onstart="onStart"
     >
     </prize-plate>
-    <award-list :award-list="awardListData"></award-list>
-    <activity-description :description-list="activityData"></activity-description>
+    <award-list v-if="isRevealWinner" :award-list="list"></award-list>
+    <activity-description :description="description"></activity-description>
     <lottery-result
       :prize="luckyPrize"
+      :is-lucky="isWinner"
       @onhide="onHide"
     ></lottery-result>
   </div>
 </template>
 
 <script>
+  import findIndex from 'lodash/findIndex'
+  import find from 'lodash/find'
+  import isEmpty from 'lodash/isEmpty'
   import prizePlate from '@/components/prizePlate'
   import awardList from '@/components/awardList'
   import lotteryResult from '@/components/lotteryResult'
   import activityDescription from '@/components/activityDescription'
 
-  import awardListData from '@/constants/awardListData'
-  import activityData from '@/constants/activityData'
 
   import { preloadImage } from '@/utils/imageUtil'
-  import prizeList from '@/constants/prizeData'
   import essentialImgList from '@/constants/essential'
+
+  import { mapActions, mapState, mapGetters } from 'vuex'
 
 
   export default {
@@ -41,27 +45,23 @@
       return {
         canvasWidth: document.body.clientWidth * 2,
         canvasHeight: document.body.clientWidth * 1.63 * 2,
-        awardListData,
-        activityData,
         prizeImageList: null,
-        luckyPrize: null,
-        remainCount: 3,
-        needReset: false,
+        resetPos: false,
       }
     },
     methods: {
+      ...mapActions('ui', ['setLoadingStatus']),
+      ...mapActions('activityInfo', ['loadActivity']),
+      ...mapActions('launchLottery', ['launchLottery']),
+      ...mapActions('luckyList', ['loadLuckyList']),
       onHide() {
-        this.luckyPrize = null
-        this.needReset = true
+        this.resetPos = true
       },
-      onEnd(luckyIndex) {
-        this.luckyPrize = prizeList[luckyIndex]
-        if (this.remainCount > 0) {
-          this.remainCount = this.remainCount - 1
-        }
+      onEnd() {
+        this.launchLottery({ activityId: 1, userId: '680464' })
       },
       onStart() {
-        this.needReset = false
+        this.resetPos = false
       },
     },
     components: {
@@ -71,14 +71,48 @@
       lotteryResult,
     },
     computed: {
+      ...mapState('activityInfo', ['loading', 'error']),
+      ...mapGetters('activityInfo', [
+        'activity',
+        'awards',
+        'awardImgs',
+        'remainCount',
+        'isRevealWinner',
+        'description',
+      ]),
+      ...mapGetters('launchLottery', [
+        'awardId',
+        'isWinner',
+      ]),
+      ...mapGetters('luckyList', ['list']),
+      luckyPrize() {
+        return find(this.awardImgs, { id: this.awardId })
+      },
+      luckyIndex() {
+        return findIndex(this.awardImgs, { id: this.awardId })
+      },
     },
     created() {
-      Promise.all([
-        preloadImage(essentialImgList),
-        preloadImage(prizeList.slice(0, 6)),
-      ]).then((results) => {
-        this.prizeImageList = results[1]
-      })
+      this.loadActivity({ activityId: 1, userId: '680464' })
+    },
+    watch: {
+      awardImgs(newVal) {
+        if (!isEmpty(newVal)) {
+          this.setLoadingStatus(true)
+          Promise.all([
+            preloadImage(essentialImgList),
+            preloadImage(newVal),
+          ]).then((results) => {
+            this.prizeImageList = results[1]
+            this.setLoadingStatus(false)
+          })
+        }
+      },
+      isRevealWinner(val) {
+        if (val === 'Y') {
+          this.loadLuckyList({ activityId: 1, userId: '680464' })
+        }
+      },
     },
   }
 </script>
@@ -89,7 +123,7 @@
   .mainContainer{
     flex: none;
     padding-bottom: 30px;
-    background-image: url('/assets/bg.jpg');
+    background-image: url('/assets/lottery_bg.jpg');
     background-size: 100% auto;
     background-repeat: no-repeat;
     overflow: scroll;

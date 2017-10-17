@@ -1,15 +1,7 @@
 <template>
   <div id="app" class="layoutColumn">
     <loader
-      v-show="isLoadingVisible"
-    />
-    <loader
-      v-show="isReqErrorVisible"
-      :status="'error'"
-    />
-    <loader
-      v-show="isReqResolveVisible"
-      :status="'resolve'"
+      v-show="isGlobalLoading"
     />
     <div class="flex1 pageContent">
       <div style="width: 100%;">
@@ -23,8 +15,7 @@
 </template>
 
 <script>
-import debounce from 'lodash/debounce'
-import { mapGetters, mapState } from 'vuex'
+import { mapGetters } from 'vuex'
 import loader from '@/components/common/loader'
 
 export default {
@@ -38,18 +29,7 @@ export default {
     loader,
   },
   computed: {
-    ...mapGetters('ui', ['isLoading']),
-    ...mapState('ui', ['isReqErrorVisible', 'isReqResolveVisible']),
-  },
-  methods: {
-    showDebouncedLoading: debounce(function a(bool) {
-      this.isLoadingVisible = bool
-    }, 1000),
-  },
-  watch: {
-    isLoading(newVal) {
-      this.showDebouncedLoading(newVal)
-    },
+    ...mapGetters('ui', ['isGlobalLoading']),
   },
 }
 </script>

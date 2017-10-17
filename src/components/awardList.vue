@@ -64,6 +64,7 @@
 </style>
 
 <script>
+  import isEmpty from 'lodash/isEmpty'
   import titleTextImg from '@/assets/awardText.png'
 
   export default {
@@ -98,7 +99,13 @@
       },
     },
     mounted() {
-      this.marquee(50)
+    },
+    watch: {
+      awardList(val) {
+        if (!isEmpty(val)) {
+          setTimeout(() => this.marquee(50), 500)
+        }
+      },
     },
   }
 

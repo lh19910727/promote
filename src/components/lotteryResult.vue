@@ -6,7 +6,7 @@
       position="center"
       @on-hide="hide"
     >
-      <div v-if="isLucky" class="lotteryResultContent">
+      <div v-if="isSuccess" class="lotteryResultContent">
         <h2>
           <span>
             恭喜您抽中<br/>
@@ -20,7 +20,7 @@
           </div>
         </div>
       </div>
-      <div v-if="isFail" class="lotteryResultContent fail">
+      <div v-if="!isSuccess" class="lotteryResultContent fail">
         <h2>
           <span>
             很遗憾，不要气馁<br/>
@@ -50,13 +50,14 @@
           return {}
         },
       },
+      isLucky: {
+        type: String,
+        default: 'N',
+      },
     },
     computed: {
-      isFail() {
-        return this.prize && this.prize.code === 0
-      },
-      isLucky() {
-        return this.prize && this.prize.code !== 0
+      isSuccess() {
+        return this.isLucky === 'Y'
       },
     },
     components: {
@@ -71,8 +72,8 @@
       },
     },
     watch: {
-      prize(val) {
-        this.visible = !isEmpty(val)
+      prize(newVal) {
+        this.visible = !isEmpty(newVal)
       },
     },
   }

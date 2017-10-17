@@ -51,7 +51,7 @@
       return {}
     },
     props: {
-      needReset: {
+      resetPos: {
         type: Boolean,
         default: false,
       },
@@ -64,6 +64,10 @@
         default() {
           return []
         },
+      },
+      result: {
+        type: Number,
+        default: 0,
       },
       canvasWidth: {
         type: Number,
@@ -116,14 +120,7 @@
           pauseLabel.visible = true
           this.$emit('onstart')
         } else {
-          startLabel.visible = true
-          pauseLabel.visible = false
-          // 随机抽中一个
-          const result = Math.floor(this.prizeImageList.length * Math.random())
-          const endRotation = ((result + 0.5) * this.sectorAngle * 180) / Math.PI
-          createjs.Tween.get(prizePlate, { loop: false, override: true })
-            .to({ rotation: endRotation }, 0)
-          this.$emit('onend', result)
+          this.$emit('onend')
         }
       },
       generateLabel(text, name, fontSize, visible) {
@@ -315,7 +312,6 @@
       const prizeCount = this.prizeImageList.length || 1
       this.posX = this.canvasWidth / 2
       this.sectorAngle = (Math.PI * 2) / prizeCount
-//      this.outerRadius = (this.canvasWidth / 2) * (13 / 15)
       this.outerRadius = (this.canvasWidth - rem(100)) / 2
       this.dottedRadius = (311 / 325) * this.outerRadius
       this.dottedCircleRadius = (13 / 650) * this.outerRadius
@@ -348,7 +344,7 @@
       }
     },
     watch: {
-      needReset(val) {
+      resetPos(val) {
         if (val === true) {
           this.resetPlate()
         }
@@ -356,6 +352,19 @@
       remainCount(val) {
         if (val <= 0) {
           this.disableLottery()
+        }
+      },
+      result(newVal) {
+        if (newVal >= 0) {
+          const arrowContainer = this.stage.getChildByName('arrowContainer')
+          const startLabel = arrowContainer.getChildByName('startLabel')
+          const pauseLabel = arrowContainer.getChildByName('pauseLabel')
+          const prizePlate = this.stage.getChildByName('prizePlate')
+          startLabel.visible = true
+          pauseLabel.visible = false
+          const endRotation = ((newVal + 0.5) * this.sectorAngle * 180) / Math.PI
+          createjs.Tween.get(prizePlate, { loop: false, override: true })
+            .to({ rotation: -endRotation }, 0)
         }
       },
     },

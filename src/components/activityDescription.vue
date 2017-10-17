@@ -5,11 +5,8 @@
       <img :src="descriptionImg" />
     </h2>
     <div class="descriptionList">
-      <p
-        v-for="(description, idx) in descriptionList"
-        :key="idx"
-      >
-        {{idx + 1}}. {{description}}
+      <p>
+        {{description}}
       </p>
     </div>
   </div>
@@ -92,9 +89,9 @@
       }
     },
     props: {
-      descriptionList: {
-        type: Array,
-        default: [],
+      description: {
+        type: String,
+        default: null,
       },
     },
   }

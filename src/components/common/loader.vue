@@ -1,5 +1,5 @@
 <template>
-  <MaskLayer >
+  <MaskLayer bgcolor="rgba(0,0,0,1)" >
     <div v-if="status === 'loading'" class="layoutColumn layoutCenterCenter loadingBox">
       <div class="lds-spinner">
         <div></div>
