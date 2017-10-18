@@ -11,8 +11,8 @@ Vue.http.options = {
 }
 
 const loadActivityInfo = (params) => {
-  const { activityId, userId, preview } = params
-  const endPoint = preview === 'true' ? `activityInfo/preview/${activityId}` : `activityInfo/info/${activityId}/${userId}`
+  const { activityId, preview } = params
+  const endPoint = `activityInfo/${preview === 'true' ? 'preview' : 'info'}/${activityId}`
   return Vue.http.get(endPoint)
 }
 
@@ -27,10 +27,12 @@ const loadLuckyList = (params) => {
   return Vue.http.get(endPoint, params)
 }
 const wechatConfig = (params) => Vue.http.post('wechat/config', params, { emulateJSON: true })
+const getExtensionCode = (params) => Vue.http.post('user/genExtensionCode', params)
 
 export default {
   loadActivityInfo,
   launchLottery,
   loadLuckyList,
   wechatConfig,
+  getExtensionCode,
 }

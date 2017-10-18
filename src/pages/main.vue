@@ -37,6 +37,9 @@
   import essentialImgList from '@/constants/essential'
 
   import { mapActions, mapState, mapGetters } from 'vuex'
+  import cookie from 'js-cookie'
+
+  const USER_COOKIE_ID = 'ZATECH1000100'
 
 
   export default {
@@ -51,7 +54,7 @@
     },
     methods: {
       ...mapActions('ui', ['setLoadingStatus']),
-      ...mapActions('activityInfo', ['loadActivity']),
+      ...mapActions('activityInfo', ['loadActivity', 'getExtensionCode']),
       ...mapActions('launchLottery', ['launchLottery']),
       ...mapActions('luckyList', ['loadLuckyList']),
       ...mapActions('wechatConfig', ['configWechat']),
@@ -93,25 +96,35 @@
         })
       },
       initialParams() {
-        const { params: { id }, query: { extensionCode, userId, preview } } = this.$route
+        const { params: { id }, query: { extensionCode, preview } } = this.$route
         const paramObj = {
           activityId: id,
           extensionCode,
         }
         if (preview === 'true') {
-          this.params = {
-            ...paramObj,
-            preview,
-          }
-        } else {
-          this.params = {
-            ...paramObj,
-            userId,
-          }
+          paramObj.preview = 'true'
         }
+        this.params = paramObj
       },
       isPreviewMode() {
-        return this.params.preview === 'true'
+        return this.$route.query.preview === 'true'
+      },
+      isLogged() {
+        return !!cookie.get(USER_COOKIE_ID)
+      },
+      setUserInfo() {
+        cookie.set(USER_COOKIE_ID, 'VcUpWoOw3yo5IhqaW64T1A==')
+      },
+      init() {
+        if (this.isLogged()) {
+          this.getExtensionCode()
+        }
+        this.loadActivity(this.params)
+        if (!this.isPreviewMode()) {
+          this.configWechat({
+            url: window.location.href,
+          })
+        }
       },
     },
     components: {
@@ -121,7 +134,7 @@
       lotteryResult,
     },
     computed: {
-      ...mapState('activityInfo', ['loading', 'error']),
+      ...mapState('activityInfo', ['loading', 'error', 'extensionCode']),
       ...mapGetters('activityInfo', [
         'activity',
         'awards',
@@ -147,11 +160,12 @@
       },
     },
     created() {
+//      this.setUserInfo()
+      if (!this.isLogged() && !this.isPreviewMode()) {
+        window.location.href = '/'
+      }
       this.initialParams()
-      this.loadActivity(this.params)
-      this.configWechat({
-        url: window.location.href,
-      })
+      this.init()
     },
     watch: {
       awardImgs(newVal) {

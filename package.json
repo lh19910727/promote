@@ -16,6 +16,7 @@
   },
   "dependencies": {
     "createjs-easeljs": "^0.8.2",
+    "js-cookie": "^2.1.4",
     "less-loader": "^4.0.5",
     "lodash": "^4.17.4",
     "v-tap": "^3.0.2",

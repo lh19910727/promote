@@ -6,12 +6,14 @@ import {
   LOAD_ACTIVITY_INFO_END,
   LOAD_ACTIVITY_INFO_ERROR,
   UPDATE_ACTIVITY_JOINTIMES,
+  GET_EXTENSION_CODE,
 } from '@/store/mutation-types'
 import request from '@/utils/request'
 
 const initalState = {
   activityInfo: null,
   awardList: null,
+  extensionCode: null,
   loading: false,
   error: null,
 }
@@ -58,6 +60,12 @@ const actions = {
       commit(LOAD_ACTIVITY_INFO_END)
     })
   },
+  getExtensionCode({ commit }) {
+    request.getExtensionCode().then(response => {
+      const { data: { value } } = response
+      commit(GET_EXTENSION_CODE, value)
+    })
+  },
 }
 
 // mutations
@@ -79,6 +87,9 @@ const mutations = {
   [UPDATE_ACTIVITY_JOINTIMES](state, payload) {
     const { activityInfo } = state
     state.activityInfo = { ...activityInfo, joinTimes: payload }
+  },
+  [GET_EXTENSION_CODE](state, payload) {
+    state.extensionCode = payload
   },
 }
 
