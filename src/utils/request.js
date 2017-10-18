@@ -11,8 +11,8 @@ Vue.http.options = {
 }
 
 const loadActivityInfo = (params) => {
-  const { activityId, userId } = params
-  const endPoint = `activityInfo/info/${activityId}/${userId}`
+  const { activityId, userId, preview } = params
+  const endPoint = preview === 'true' ? `activityInfo/preview/${activityId}` : `activityInfo/info/${activityId}/${userId}`
   return Vue.http.get(endPoint)
 }
 

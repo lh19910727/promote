@@ -92,6 +92,27 @@
           jsApiList: ['onMenuShareTimeline', 'onMenuShareAppMessage'],
         })
       },
+      initialParams() {
+        const { params: { id }, query: { extensionCode, userId, preview } } = this.$route
+        const paramObj = {
+          activityId: id,
+          extensionCode,
+        }
+        if (preview === 'true') {
+          this.params = {
+            ...paramObj,
+            preview,
+          }
+        } else {
+          this.params = {
+            ...paramObj,
+            userId,
+          }
+        }
+      },
+      isPreviewMode() {
+        return this.params.preview === 'true'
+      },
     },
     components: {
       prizePlate,
@@ -126,7 +147,8 @@
       },
     },
     created() {
-      this.loadActivity({ activityId: 1, userId: '680464' })
+      this.initialParams()
+      this.loadActivity(this.params)
       this.configWechat({
         url: window.location.href,
       })
@@ -145,11 +167,14 @@
         }
       },
       isRevealWinner(val) {
+        if (this.isPreviewMode()) return
         if (val === 'Y') {
-          this.loadLuckyList({ activityId: 1, userId: '680464' })
+          this.loadLuckyList(this.params)
+          // { activityId: 1, userId: '680464' }
         }
       },
       configInfoReady(newVal, oldVal) {
+        if (this.isPreviewMode()) return
         if (newVal && newVal !== oldVal) {
           this.setConfig()
           this.onShare()
