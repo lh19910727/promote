@@ -26,8 +26,15 @@ const loadLuckyList = (params) => {
   const endPoint = `activityResult/listWinnerByActivity/${activityId}`
   return Vue.http.get(endPoint, params)
 }
+
 const wechatConfig = (params) => Vue.http.post('wechat/config', params, { emulateJSON: true })
+
 const getExtensionCode = (params) => Vue.http.post('user/genExtensionCode', params)
+
+const recordShare = (params) => {
+  const { productCode, extensionCode } = params
+  return Vue.http.get(`share/product/callback/${productCode}/${extensionCode}`)
+}
 
 export default {
   loadActivityInfo,
@@ -35,4 +42,5 @@ export default {
   loadLuckyList,
   wechatConfig,
   getExtensionCode,
+  recordShare,
 }

@@ -8,6 +8,7 @@ import wechatConfig from './modules/wechatConfig'
 import activityInfo from './modules/activityInfo'
 import launchLottery from './modules/launchLottery'
 import luckyList from './modules/luckyList'
+import recordShare from './modules/recordShare'
 
 Vue.use(Vuex)
 
@@ -23,6 +24,7 @@ export default new Store({
     activityInfo,
     launchLottery,
     luckyList,
+    recordShare,
   },
   actions,
   getters,

@@ -36,7 +36,7 @@ const getters = {
     return (state.activityInfo && state.activityInfo.joinTimes) || 0
   },
   isRevealWinner(state, getter) {
-    return getter.activity && getter.activity.isRevealWinner
+    return (getter.activity && getter.activity.isRevealWinner) === 'Y'
   },
   description(state, getter) {
     return getter.activity && getter.activity.activityDesc

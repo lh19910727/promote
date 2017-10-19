@@ -58,25 +58,39 @@
       ...mapActions('launchLottery', ['launchLottery']),
       ...mapActions('luckyList', ['loadLuckyList']),
       ...mapActions('wechatConfig', ['configWechat']),
+      ...mapActions('recordShare', ['logShare']),
       onHide() {
         this.resetPos = true
       },
       onEnd() {
-        this.launchLottery({ activityId: 1, userId: '680464' })
+        this.launchLottery(this.params)
+      },
+      getCurrentPageUrl() {
+        const { protocol, hostname, pathname } = window.location
+        return `${protocol}//${hostname}${pathname}`
       },
       onStart() {
         this.resetPos = false
       },
       onShare() {
         const { shareTitle, shareDetail, shareIcon } = this.activity
-        const { protocol, hostname, pathname } = window.location
-        const link = `${protocol}//${hostname}${pathname}`
+        const { protocol, hostname } = window.location
+        const link = `${window.decodeURIComponent(this.params.shareUrl)}&ecode=${this.extensionCode}`
         const shareConfig = {
           title: shareTitle,
           desc: shareDetail,
           imgUrl: `${protocol}//${hostname}${shareIcon}`,
           link,
-          success: () => {},
+          success: () => {
+            const logShareParmas = {
+              ...this.params,
+              extensionCode: this.extensionCode,
+            }
+            this.logShare(logShareParmas)
+            setTimeout(() => {
+              window.location.href = window.location.href
+            }, 500)
+          },
           cancel: () => {},
         }
         wx.ready(() => {
@@ -96,10 +110,15 @@
         })
       },
       initialParams() {
-        const { params: { id }, query: { extensionCode, preview } } = this.$route
+        const {
+          params: { id },
+          query: { extensionCode, preview, shareUrl, productCode },
+        } = this.$route
         const paramObj = {
           activityId: id,
           extensionCode,
+          shareUrl,
+          productCode,
         }
         if (preview === 'true') {
           paramObj.preview = 'true'
@@ -135,6 +154,7 @@
     },
     computed: {
       ...mapState('activityInfo', ['loading', 'error', 'extensionCode']),
+      ...mapState('recordShare', ['recordResult']),
       ...mapGetters('activityInfo', [
         'activity',
         'awards',
@@ -192,6 +212,12 @@
         if (newVal && newVal !== oldVal) {
           this.setConfig()
           this.onShare()
+        }
+      },
+      recordResult(newVal, oldVal) {
+        if (newVal && newVal !== oldVal) {
+          console.log('---newVal', newVal)
+          window.location.href = window.location.href
         }
       },
     },
