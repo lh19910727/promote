@@ -1,5 +1,5 @@
 <template>
-  <div class="mainContainer">
+  <div class="mainContainer" :style="bgStyle">
     <prize-plate
       v-if="prizeImageList"
       id="mainCanvas"
@@ -63,7 +63,9 @@
         this.resetPos = true
       },
       onEnd() {
-        this.launchLottery(this.params)
+        if (!this.launchLotteryLoading) {
+          this.launchLottery(this.params)
+        }
       },
       getCurrentPageUrl() {
         const { protocol, hostname, pathname } = window.location
@@ -162,6 +164,7 @@
         'remainCount',
         'isRevealWinner',
         'description',
+        'bgImage',
       ]),
       ...mapGetters('launchLottery', [
         'awardId',
@@ -169,6 +172,9 @@
       ]),
       ...mapGetters('luckyList', ['list']),
       ...mapState('wechatConfig', ['config']),
+      ...mapState('launchLottery', {
+        launchLotteryLoading: state => state.loading,
+      }),
       luckyPrize() {
         return find(this.awardImgs, { id: this.awardId })
       },
@@ -178,9 +184,14 @@
       configInfoReady() {
         return !(isEmpty(this.config) || isEmpty(this.activity))
       },
+      bgStyle() {
+        if (!isEmpty(this.bgImage)) {
+          return { backgroundImage: `url(${this.bgImage.icon})` }
+        }
+        return null
+      },
     },
     created() {
-//      this.setUserInfo()
       if (!this.isLogged() && !this.isPreviewMode()) {
         window.location.href = '/'
       }
@@ -192,7 +203,7 @@
         if (!isEmpty(newVal)) {
           this.setLoadingStatus(true)
           Promise.all([
-            preloadImage(essentialImgList),
+            preloadImage(essentialImgList.concat([this.bgImage])),
             preloadImage(newVal),
           ]).then((results) => {
             this.prizeImageList = results[1]
@@ -206,11 +217,16 @@
           this.loadLuckyList(this.params)
         }
       },
-      configInfoReady(newVal, oldVal) {
+      configInfoReady(newVal) {
         if (this.isPreviewMode()) return
-        if (newVal && newVal !== oldVal) {
+        if (newVal) {
           this.setConfig()
           this.onShare()
+        }
+      },
+      isWinner(newVal) {
+        if (newVal === 'Y' && this.isRevealWinner === true) {
+          this.loadLuckyList(this.params)
         }
       },
     },
@@ -223,7 +239,6 @@
   .mainContainer{
     flex: none;
     padding-bottom: 30px;
-    background-image: url('/assets/lottery_bg.jpg');
     background-size: 100% auto;
     background-repeat: no-repeat;
     overflow: scroll;

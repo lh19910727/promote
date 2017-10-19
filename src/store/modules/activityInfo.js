@@ -41,6 +41,10 @@ const getters = {
   description(state, getter) {
     return getter.activity && getter.activity.activityDesc
   },
+  bgImage(state, getter) {
+    const bgImgUrl = getter.activity && getter.activity.backgroundImg
+    return { icon: bgImgUrl, title: '背景图片' }
+  },
 }
 
 // actions

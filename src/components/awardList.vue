@@ -48,6 +48,7 @@
       background-color: $yellow-82;
       border: rem-calc(1px) dotted $primary-red;
       border-top: none;
+      padding: rem-calc(10px) 0;
       overflow: hidden;
       p{
         font-size: rem-calc(15px);
@@ -103,7 +104,13 @@
     watch: {
       awardList(val) {
         if (!isEmpty(val)) {
-          setTimeout(() => this.marquee(50), 500)
+          setTimeout(() => {
+            const marqueeBox = this.$refs.marqueeBox
+            const originEle = this.$refs.origin
+            if (marqueeBox.clientHeight <= originEle.clientHeight) {
+              this.marquee(50)
+            }
+          }, 500)
         }
       },
     },
