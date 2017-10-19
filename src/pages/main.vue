@@ -75,7 +75,7 @@
       onShare() {
         const { shareTitle, shareDetail, shareIcon } = this.activity
         const { protocol, hostname } = window.location
-        const link = `${window.decodeURIComponent(this.params.shareUrl)}&ecode=${this.extensionCode}`
+        const link = `${window.decodeURIComponent(this.params.shareUrl)}&extensionCode=${this.extensionCode}`
         const shareConfig = {
           title: shareTitle,
           desc: shareDetail,
@@ -202,9 +202,8 @@
       },
       isRevealWinner(val) {
         if (this.isPreviewMode()) return
-        if (val === 'Y') {
+        if (val === true) {
           this.loadLuckyList(this.params)
-          // { activityId: 1, userId: '680464' }
         }
       },
       configInfoReady(newVal, oldVal) {
@@ -212,12 +211,6 @@
         if (newVal && newVal !== oldVal) {
           this.setConfig()
           this.onShare()
-        }
-      },
-      recordResult(newVal, oldVal) {
-        if (newVal && newVal !== oldVal) {
-          console.log('---newVal', newVal)
-          window.location.href = window.location.href
         }
       },
     },
