@@ -17,8 +17,9 @@ const loadActivityInfo = (params) => {
 }
 
 const launchLottery = (params) => {
-  const endPoint = 'activityInfo/prizeDraw'
-  return Vue.http.post(endPoint, params, { headers: { 'Content-Type': 'application/json' } })
+  const { activityId } = params
+  const endPoint = `activityInfo/prizeDraw/${activityId}`
+  return Vue.http.get(endPoint)
 }
 
 const loadLuckyList = (params) => {
