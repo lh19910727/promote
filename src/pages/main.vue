@@ -1,25 +1,30 @@
 <template>
   <div class="mainContainer" :style="bgStyle">
-    <prize-plate
-      v-if="prizeImageList"
-      id="mainCanvas"
-      :canvas-width="canvasWidth"
-      :canvas-height="canvasHeight"
-      :prize-image-list="prizeImageList"
-      :remain-count="remainCount"
-      :reset-pos="resetPos"
-      :result="luckyIndex"
-      @onend="onEnd"
-      @onstart="onStart"
-    >
-    </prize-plate>
-    <award-list v-if="isRevealWinner" :award-list="list"></award-list>
-    <activity-description :description="description"></activity-description>
-    <lottery-result
-      :prize="luckyPrize"
-      :is-lucky="isWinner"
-      @onhide="onHide"
-    ></lottery-result>
+    <div v-if="hasError" class="error-box">
+      对不起，{{error}}
+    </div>
+    <div v-if="!hasError">
+      <prize-plate
+        v-if="prizeImageList"
+        id="mainCanvas"
+        :canvas-width="canvasWidth"
+        :canvas-height="canvasHeight"
+        :prize-image-list="prizeImageList"
+        :remain-count="remainCount"
+        :reset-pos="resetPos"
+        :result="luckyIndex"
+        @onend="onEnd"
+        @onstart="onStart"
+      >
+      </prize-plate>
+      <award-list v-if="isRevealWinner" :award-list="list"></award-list>
+      <activity-description :description="description"></activity-description>
+      <lottery-result
+        :prize="luckyPrize"
+        :is-lucky="isWinner"
+        @onhide="onHide"
+      ></lottery-result>
+    </div>
   </div>
 </template>
 
@@ -77,7 +82,8 @@
       onShare() {
         const { shareTitle, shareDetail, shareIcon } = this.activity
         const { protocol, hostname } = window.location
-        const link = `${window.decodeURIComponent(this.params.shareUrl)}&extensionCode=${this.extensionCode}`
+        const { productCode } = this.params
+        const link = `${protocol}//${document.domain}/share/product.html?etc=${this.extensionCode}&pcode=${productCode}`
         const shareConfig = {
           title: shareTitle,
           desc: shareDetail,
@@ -185,10 +191,13 @@
         return !(isEmpty(this.config) || isEmpty(this.activity))
       },
       bgStyle() {
-        if (!isEmpty(this.bgImage)) {
+        if (!isEmpty(this.bgImage.icon)) {
           return { backgroundImage: `url(${this.bgImage.icon})` }
         }
-        return null
+        return { backgroundColor: '#ffffff' }
+      },
+      hasError() {
+        return !isEmpty(this.error)
       },
     },
     created() {
@@ -241,7 +250,13 @@
     padding-bottom: 30px;
     background-size: 100% auto;
     background-repeat: no-repeat;
-    overflow: scroll;
+    overflow-y: auto;
     background-color: $yellow-23;
+    .error-box{
+      padding: rem-calc(20px);
+      text-align: center;
+      font-size: rem-calc(14px);
+      line-height: 1.7;
+    }
   }
 </style>

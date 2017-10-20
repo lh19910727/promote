@@ -57,6 +57,7 @@ var webpackConfig = merge(baseWebpackConfig, {
         : config.build.index,
       template: 'index.html',
       inject: true,
+      projectPath: '/static/promote/wheel',
       minify: {
         removeComments: true,
         collapseWhitespace: true,

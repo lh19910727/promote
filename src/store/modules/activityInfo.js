@@ -52,14 +52,14 @@ const actions = {
   loadActivity({ commit }, params) {
     commit(LOAD_ACTIVITY_INFO_BEGIN)
     request.loadActivityInfo(params).then(response => {
-      const { data: { resultFlag, errorCode, resultContent } } = response
+      const { data: { resultFlag, resultMsg, resultContent } } = response
       if (resultFlag) {
         commit(LOAD_ACTIVITY_INFO, resultContent)
       } else {
-        commit(LOAD_ACTIVITY_INFO_ERROR, errorCode)
+        commit(LOAD_ACTIVITY_INFO_ERROR, resultMsg)
       }
     }, () => {
-      commit(LOAD_ACTIVITY_INFO_ERROR, '服务器错误')
+      commit(LOAD_ACTIVITY_INFO_ERROR, '页面暂时不可用')
     }).finally(() => {
       commit(LOAD_ACTIVITY_INFO_END)
     })

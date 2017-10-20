@@ -246,7 +246,8 @@
           container.addChild(sectorBoxArcLine)
           // label
           const labelRadius = this.middleRadius * 0.42
-          const label = new TextArc(prize.title, `bold ${this.getPrizeLabelFontSize()}px Arial`, '#f15955', labelRadius)
+          const maxLength = (labelRadius + (this.getPrizeLabelFontSize() / 2)) * sectorAngle
+          const label = new TextArc(prize.title, `bold ${this.getPrizeLabelFontSize()}px Arial`, '#f15955', labelRadius, maxLength)
           const labelAngle = cumulativeAngle + (sectorAngle / 2.0)
           const labelX = posX + (labelRadius * Math.cos(labelAngle))
           const labelY = posY + (labelRadius * Math.sin(labelAngle))

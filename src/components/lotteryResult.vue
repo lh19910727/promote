@@ -16,7 +16,7 @@
         <div class="layoutColumn layoutCenterCenter prizeBox">
           <div class="prizeInnerBox">
             <img :src="prize.icon" />
-            <h3>请到<a href="#">"我的奖品"</a>查看详情</h3>
+            <h3>请到<a href="/dashboard/prize">"我的奖品"</a>查看详情</h3>
           </div>
         </div>
       </div>

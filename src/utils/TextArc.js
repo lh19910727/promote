@@ -1,13 +1,16 @@
 export default class TextArc extends createjs.Text {
-  constructor(text, font, color, radius) {
+  constructor(text, font, color, radius, maxLength) {
     super(text, font, color)
     this.radius = radius;
-    this.textBaseline = 'center';
+    this.textBaseline = 'bottom';
+    this.textAlign = 'center';
+    this.maxLength = maxLength;
   }
 
   _drawTextLine(ctx, text, y) {
     const wordWidth = ctx.measureText(text).width;
-    const angle = 2 * Math.asin(wordWidth / (2 * this.radius));
+    const maxLen = this.maxLength;
+    const angle = 2 * Math.asin((wordWidth > maxLen ? maxLen : wordWidth) / (2 * this.radius));
     ctx.save();
     ctx.rotate(-1 * (angle / 2));
     ctx.rotate(-1 * ((angle / text.length) / 2))

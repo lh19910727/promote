@@ -48,7 +48,7 @@
       background-color: $yellow-82;
       border: rem-calc(1px) dotted $primary-red;
       border-top: none;
-      padding: rem-calc(10px) 0;
+      padding: 0 rem-calc(10px);
       overflow: hidden;
       p{
         font-size: rem-calc(15px);
@@ -108,7 +108,7 @@
             const marqueeBox = this.$refs.marqueeBox
             const originEle = this.$refs.origin
             if (marqueeBox.clientHeight <= originEle.clientHeight) {
-              this.marquee(50)
+              this.marquee(30)
             }
           }, 500)
         }

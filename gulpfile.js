@@ -1,9 +1,17 @@
-var gulp = require('gulp');
-var shell = require('gulp-shell');
+const gulp = require('gulp');
+const shell = require('gulp-shell');
+const SVN_PROJECT_PATH = '/Users/chenzaining/Desktop/wkspace/SVN/20170927';
+const DELETE_PATH = '/Users/chenzaining/Desktop/wkspace/SVN/20170927/src/main/resources/static/promote/wheel';
+const STATIC_PATH = '/Users/chenzaining/Desktop/wkspace/SVN/20170927/src/main/resources/static/promote';
+const TEMPLATE_PATH = '/Users/chenzaining/Desktop/wkspace/SVN/20170927/src/main/resources/templates/promote/wheel';
+
 
 gulp.task('build', shell.task([
   'npm run build',
-  'cp -af dist/static/promote/* /Users/chenzaining/Desktop/wkspace/SVN/20170927/src/main/resources/static/promote',
-  'cp -af dist/static/*.* /Users/chenzaining/Desktop/wkspace/SVN/20170927/src/main/resources/templates/promote',
+  `svn delete ${DELETE_PATH}`,
+  'echo delete old done',
+  `cp -af dist/static/promote/* ${STATIC_PATH}`,
+  `cp -af dist/*.* ${TEMPLATE_PATH}`,
+  `cd ${SVN_PROJECT_PATH} && svn add . --force`,
   'echo done'
-    ]))
+]))
