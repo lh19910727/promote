@@ -13,13 +13,14 @@
         :remain-count="remainCount"
         :reset-pos="resetPos"
         :result="luckyIndex"
-        @onend="onEnd"
         @onstart="onStart"
+        @onend = "onEnd"
       >
       </prize-plate>
       <award-list v-if="isRevealWinner" :award-list="list"></award-list>
       <activity-description :description="description"></activity-description>
       <lottery-result
+        :visible="visible"
         :prize="luckyPrize"
         :is-lucky="isWinner"
         @onhide="onHide"
@@ -54,7 +55,9 @@
         canvasWidth: document.body.clientWidth * 2,
         canvasHeight: document.body.clientWidth * 1.63 * 2,
         prizeImageList: null,
-        resetPos: false,
+        resetPos: true,
+        visible: false,
+        tik: null,
       }
     },
     methods: {
@@ -66,18 +69,24 @@
       ...mapActions('recordShare', ['logShare']),
       onHide() {
         this.resetPos = true
-      },
-      onEnd() {
-        if (!this.launchLotteryLoading) {
-          this.launchLottery(this.params)
-        }
+        this.visible = false
       },
       getCurrentPageUrl() {
         const { protocol, hostname, pathname } = window.location
         return `${protocol}//${hostname}${pathname}`
       },
       onStart() {
-        this.resetPos = false
+        if (this.resetPos) {
+          this.launchLottery(this.params)
+          this.resetPos = false
+        }
+      },
+      onEnd() {
+        this.tik = setTimeout(() => {
+          this.visible = true
+          clearTimeout(this.tick)
+          this.tick = null
+        }, 500)
       },
       onShare() {
         const { shareTitle, shareDetail, shareIcon } = this.activity
@@ -97,7 +106,7 @@
             this.logShare(logShareParmas)
             setTimeout(() => {
               window.location.href = window.location.href
-            }, 500)
+            }, 1000)
           },
           cancel: () => {},
         }
@@ -139,9 +148,6 @@
       isLogged() {
         return !!cookie.get(USER_COOKIE_ID)
       },
-      setUserInfo() {
-        cookie.set(USER_COOKIE_ID, 'VcUpWoOw3yo5IhqaW64T1A==')
-      },
       init() {
         if (this.isLogged()) {
           this.getExtensionCode()
@@ -178,9 +184,6 @@
       ]),
       ...mapGetters('luckyList', ['list']),
       ...mapState('wechatConfig', ['config']),
-      ...mapState('launchLottery', {
-        launchLotteryLoading: state => state.loading,
-      }),
       luckyPrize() {
         return find(this.awardImgs, { id: this.awardId })
       },

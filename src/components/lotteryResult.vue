@@ -33,17 +33,19 @@
 </template>
 
 <script>
-  import isEmpty from 'lodash/isEmpty'
   import { Popup, TransferDomDirective as TransferDom } from 'vux'
 
   export default {
     name: 'lotteryResult',
     data() {
       return {
-        visible: false,
       }
     },
     props: {
+      visible: {
+        type: Boolean,
+        default: false,
+      },
       prize: {
         type: Object,
         default() {
@@ -72,9 +74,6 @@
       },
     },
     watch: {
-      prize(newVal) {
-        this.visible = !isEmpty(newVal)
-      },
     },
   }
 

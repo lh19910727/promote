@@ -105,23 +105,57 @@
         prizePlate.rotation = 0
       },
       animatePlate() {
+        this.$emit('onstart')
+      },
+      // animatePlate() {
+      //   const arrowContainer = this.stage.getChildByName('arrowContainer')
+      //   const startLabel = arrowContainer.getChildByName('startLabel')
+      //   const pauseLabel = arrowContainer.getChildByName('pauseLabel')
+      //   const prizePlate = this.stage.getChildByName('prizePlate')
+      //   if (this.remainCount <= 0) return
+      //   if (startLabel.visible) {
+      //     prizePlate.rotation = 0
+      //     createjs.Tween.get(prizePlate, {
+      //       loop: true,
+      //       override: true,
+      //     }, true).to({ rotation: 360 }, 1000)
+      //     startLabel.visible = false
+      //     pauseLabel.visible = true
+      //     this.$emit('onstart')
+      //   } else {
+      //     this.$emit('onend')
+      //   }
+      // },
+      // animatePlate() {
+      //   const arrowContainer = this.stage.getChildByName('arrowContainer')
+      //   const startLabel = arrowContainer.getChildByName('startLabel')
+      //   const pauseLabel = arrowContainer.getChildByName('pauseLabel')
+      //   const prizePlate = this.stage.getChildByName('prizePlate')
+      //   if (this.remainCount <= 0) return
+      //   if (startLabel.visible) {
+      //     prizePlate.rotation = 0
+      //     createjs.Tween.get(prizePlate, {
+      //       loop: true,
+      //       override: true,
+      //     }, true).to({ rotation: 360 }, 1000)
+      //     startLabel.visible = false
+      //     pauseLabel.visible = true
+      //     this.$emit('onstart')
+      //   }
+      // },
+      endAnimate(val, count) {
         const arrowContainer = this.stage.getChildByName('arrowContainer')
         const startLabel = arrowContainer.getChildByName('startLabel')
         const pauseLabel = arrowContainer.getChildByName('pauseLabel')
         const prizePlate = this.stage.getChildByName('prizePlate')
-        if (this.remainCount <= 0) return
-        if (startLabel.visible) {
-          prizePlate.rotation = 0
-          createjs.Tween.get(prizePlate, {
-            loop: true,
-            override: true,
-          }, true).to({ rotation: 360 }, 1000)
-          startLabel.visible = false
-          pauseLabel.visible = true
-          this.$emit('onstart')
-        } else {
-          this.$emit('onend')
-        }
+        startLabel.visible = true
+        pauseLabel.visible = false
+        const endRotation = ((val + 0.5) * this.sectorAngle * 180) / Math.PI
+        createjs.Tween.get(prizePlate, { loop: false, override: true })
+          .to({ rotation: -(endRotation + (360 * count)) }, (1000 * count))
+          .call(() => {
+            this.$emit('onend')
+          })
       },
       generateLabel(text, name, fontSize, visible) {
         // arrow text
@@ -357,15 +391,7 @@
       },
       result(newVal) {
         if (newVal >= 0) {
-          const arrowContainer = this.stage.getChildByName('arrowContainer')
-          const startLabel = arrowContainer.getChildByName('startLabel')
-          const pauseLabel = arrowContainer.getChildByName('pauseLabel')
-          const prizePlate = this.stage.getChildByName('prizePlate')
-          startLabel.visible = true
-          pauseLabel.visible = false
-          const endRotation = ((newVal + 0.5) * this.sectorAngle * 180) / Math.PI
-          createjs.Tween.get(prizePlate, { loop: false, override: true })
-            .to({ rotation: -endRotation }, 0)
+          this.endAnimate(newVal, 6)
         }
       },
     },
