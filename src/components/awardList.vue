@@ -73,6 +73,8 @@
     data() {
       return {
         titleTextImg,
+        intervalTimer: null,
+        timeoutTimer: null,
       }
     },
     props: {
@@ -84,31 +86,48 @@
       },
     },
     methods: {
+      clearTimeoutTask() {
+        if (this.timeoutTimer) {
+          window.clearTimeout(this.timeoutTimer)
+          this.timeoutTimer = null
+        }
+      },
+      clearIntervalTask() {
+        if (this.intervalTimer) {
+          window.clearInterval(this.intervalTimer)
+          this.intervalTimer = null
+        }
+      },
       marquee(speed = 10) {
         const marqueeBox = this.$refs.marqueeBox
         const originEle = this.$refs.origin
         const cloneEle = this.$refs.clone
         cloneEle.innerHTML = originEle.innerHTML
-        const rolling = () => {
+        this.clearIntervalTask()
+        this.intervalTimer = setInterval(() => {
           if (marqueeBox.scrollTop === cloneEle.offsetTop) {
             marqueeBox.scrollTop = 0
           } else {
             marqueeBox.scrollTop += 1
           }
-        }
-        setInterval(rolling, speed)
+        }, speed)
       },
     },
     mounted() {
     },
+    destroy() {
+      this.clearTimeoutTask()
+      this.clearIntervalTask()
+    },
     watch: {
       awardList(val) {
         if (!isEmpty(val)) {
-          setTimeout(() => {
+          this.clearTimeoutTask()
+          this.timeoutTimer = setTimeout(() => {
             const marqueeBox = this.$refs.marqueeBox
             const originEle = this.$refs.origin
             if (marqueeBox.clientHeight <= originEle.clientHeight) {
-              this.marquee(30)
+              this.marquee(40)
             }
           }, 500)
         }

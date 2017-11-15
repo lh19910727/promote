@@ -6,9 +6,15 @@ Vue.http.options = {
   root: `//${document.domain}:${window.location.port}`,
   headers: {
     'Content-Type': 'application/json',
+    'Cache-Control': 'no-cache',
   },
   loadingUIRequired: true,
 }
+
+Vue.http.interceptors.push((request, next) => {
+  request.url += (request.url.indexOf('?') > 0 ? '&' : '?') + `cb=${new Date().getTime()}` //eslint-disable-line
+  next()
+})
 
 const loadActivityInfo = (params) => {
   const { activityId, preview } = params
