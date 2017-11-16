@@ -152,7 +152,8 @@
         pauseLabel.visible = false
         const endRotation = ((val + 0.5) * this.sectorAngle * 180) / Math.PI
         createjs.Tween.get(prizePlate, { loop: false, override: true })
-          .to({ rotation: -(endRotation + (360 * count)) }, (1000 * count))
+          .to({ rotation: ((360 - endRotation) + (360 * count)) }, (1000 * count),
+           createjs.Ease.cubicOut)
           .call(() => {
             this.$emit('onend')
           })
